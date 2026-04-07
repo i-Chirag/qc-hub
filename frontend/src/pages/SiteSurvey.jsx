@@ -61,7 +61,6 @@ export default function SiteSurvey() {
     setError(null)
     setSaved(false)
     try {
-      // Ensure numeric fields are actually numbers
       const payload = {
         ...form,
         available_kw: parseFloat(form.available_kw),
@@ -100,7 +99,6 @@ export default function SiteSurvey() {
   return (
     <div style={{ padding: '40px', maxWidth: 1400, margin: '0 auto' }}>
       
-      {/* ──── Header ──── */}
       <div className="no-print">
         <div style={{ marginBottom: 40 }} className="animate-fade">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
@@ -119,14 +117,12 @@ export default function SiteSurvey() {
           onSelect={(p) => {
             set('entity_name', p.entity_name || p.name);
             set('location', p.location);
-            // If loading from a P&L, there's no target_model, but we can set the name
           }} 
         />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 440px' : '1fr', gap: 32, alignItems: 'start' }}>
         
-        {/* ──── Input Form ──── */}
         <div className="no-print" style={{ maxWidth: 800 }}>
           <Section title="Asset Identification" icon="◩">
             <Field label="Installation Entity" wide>
@@ -201,7 +197,6 @@ export default function SiteSurvey() {
           </div>
         </div>
 
-        {/* ──── Result Panel ──── */}
         {result && (
           <div style={{ position: 'sticky', top: 40 }} className="animate-fade">
              <div className="glass-card" style={{ padding: '32px', background: 'rgba(131, 131, 131, 0.02)', border: `1px solid ${result.readiness_score > 80 ? 'var(--accent)' : '#f87171'}33` }}>
@@ -256,6 +251,18 @@ export default function SiteSurvey() {
                      PRINT PDF
                    </button>
                 </div>
+
+                {saved && (
+                   <button 
+                     onClick={() => navigate('/estimator', { state: { entity_name: form.entity_name, location: form.location, capacity: result.target_capacity } })}
+                     style={{
+                       width: '100%', padding: '16px', background: 'rgba(136, 231, 136, 0.1)', border: '1px solid var(--accent)', borderRadius: 12,
+                       color: 'var(--accent)', fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', transition: '0.2s'
+                     }}
+                   >
+                     PROCEED TO MACHINERY MIX →
+                   </button>
+                )}
              </div>
           </div>
         )}
