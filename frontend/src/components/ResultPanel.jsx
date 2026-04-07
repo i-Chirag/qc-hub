@@ -97,9 +97,9 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
         <div className="glass-card" style={{ padding: '24px', marginBottom: 20, background: 'rgba(255,255,255,0.01)' }}>
           <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Technical Audit Details</div>
           <Row label="Daily Capacity" value={fmtKg(r.kg_per_day)} />
-          <Row label="Billing Rate" value={`₹ ${r.avg_billing_rate} / kg`} />
-          <Row label="Monthly Revenue" value={fmt(r.monthly_revenue)} bold />
-          <Row label="Total OPEX" value={fmt(r.total_opex_monthly)} />
+          <Row label="Billing Rate" value={`₹ ${form.billing_rate_per_kg || 0} / kg`} />
+          <Row label="Monthly Revenue" value={fmt(r.total_revenue)} bold />
+          <Row label="Total OPEX" value={fmt(r.total_cost)} />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
@@ -181,17 +181,17 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
               <Table data={[
                 ['Target Capacity', fmtKg(r.kg_per_day)],
                 ['Industry Cluster', r.industry || 'General'],
-                ['Machine Setup', r.machine_count + ' Units'],
-                ['Shift Duration', r.shift_h + ' Hours'],
-                ['Billing Rate (Avg)', '₹ ' + r.avg_billing_rate + ' / kg'],
-                ['Working Days', r.operational_days + ' Days/Mo']
+                ['Machine Setup', (form.capacity || 0) + ' Units'],
+                ['Shift Duration', (form.shift_h || 8) + ' Hours'],
+                ['Billing Rate (Avg)', '₹ ' + (form.billing_rate_per_kg || 0) + ' / kg'],
+                ['Working Days', '26 Days/Mo']
               ]} />
            </div>
            <div>
               <div style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: 20, textTransform: 'uppercase' }}>Monthly Financial Audit</div>
               <Table data={[
-                ['Gross Revenue', fmt(r.monthly_revenue)],
-                ['Variable OPEX', fmt(r.total_opex_monthly)],
+                ['Gross Revenue', fmt(r.total_revenue)],
+                ['Variable OPEX', fmt(r.total_variable_cost)],
                 ['Power & Fuel', fmt(r.electricity_cost + r.gas_cost)],
                 ['Labour Force', fmt(r.labour_monthly)],
                 ['Linen Chemicals', fmt(r.chemical_cost)],

@@ -104,8 +104,8 @@ export default function ExecutiveReport() {
                <div>
                   <h4 style={{ fontSize: '0.8rem', fontWeight: 900, marginBottom: 15, textTransform: 'uppercase' }}>Monthly Performance Matrix</h4>
                   <Table data={[
-                    ['Estimated Revenue', fmt(pl.monthly_revenue)],
-                    ['Direct Operational Costs', fmt(pl.total_opex_monthly)],
+                    ['Estimated Revenue', fmt(pl.total_revenue)],
+                    ['Direct Operational Costs', fmt(pl.total_cost)],
                     ['Estimated Monthly GOI', fmt(pl.gross_operating_income)],
                     ['Net Operating Margin', pl.goi_percentage + '%'],
                     ['Annual Cashflow Projection', fmtLakh(pl.annual_profit)]

@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
-import { api } from '../api'
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts'
+import ProjectLoader from '../components/ProjectLoader'
 
 const InsightCard = ({ data }) => {
   const colors = {
@@ -33,21 +32,52 @@ export default function AIInsights() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    const runAnalysis = async () => {
-      try {
-        const res = await api.getLatestInsights()
-        if (res.error) throw new Error(res.error)
-        setData(res)
-      } catch (e) {
-        console.error(e)
-        setError(e.message || "Failed to load intelligence data.")
-      } finally {
-        setLoading(false)
+  const runAnalysis = async (selectedData = null) => {
+    setLoading(true)
+    setError(null)
+    try {
+      let res
+      if (selectedData) {
+        res = await api.analyzeInsights(selectedData)
+      } else {
+        res = await api.getLatestInsights()
       }
+      if (res.error) throw new Error(res.error)
+      setData(res)
+    } catch (e) {
+      console.error(e)
+      setError(e.message || "Failed to load intelligence data.")
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     runAnalysis()
   }, [])
+
+  const handleEntitySelect = async (project) => {
+    const name = project.entity_name || project.name
+    setLoading(true)
+    try {
+      const all = await api.getVaultProjects()
+      const matches = all.filter(p => (p.entity_name || p.name) === name)
+      
+      const plData = matches.find(m => m.type === 'financial')
+      const surveyData = matches.find(m => m.type === 'technical')
+      const estimateData = matches.find(m => m.type === 'budget')
+
+      await runAnalysis({
+        pl_data: plData,
+        survey_data: surveyData,
+        estimate_data: estimateData
+      })
+    } catch (err) {
+      console.error(err)
+      setError("Failed to coordinate project data.")
+      setLoading(false)
+    }
+  }
 
   if (loading) return (
     <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-dim)', fontFamily: 'var(--font-head)', fontWeight: 800 }}>
@@ -55,7 +85,7 @@ export default function AIInsights() {
     </div>
   )
 
-  if (error || !data) return (
+  const ErrorState = () => (
     <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40 }}>
        <div style={{ fontSize: '3rem', marginBottom: 20 }}>🔍</div>
        <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: 12 }}>No Active Project Found</h2>
@@ -65,22 +95,32 @@ export default function AIInsights() {
        <a href="/pl" style={{ padding: '14px 32px', background: 'var(--accent)', borderRadius: 12, color: '#061706', fontWeight: 800, textDecoration: 'none', fontSize: '0.85rem' }}>
           START P&L AUDIT
        </a>
+       <div style={{ marginTop: 40, width: '100%', maxWidth: 400 }}>
+          <ProjectLoader onSelect={handleEntitySelect} />
+       </div>
     </div>
   )
+
+  if (error || !data) return <ErrorState />
 
   return (
     <div style={{ padding: '64px 48px', maxWidth: 1400, margin: '0 auto' }}>
       
       {/* ──── Header ──── */}
-      <div style={{ marginBottom: 48 }} className="animate-fade">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>INTELLIGENCE / {data.entity_name ? data.entity_name.toUpperCase() : 'DIAGNOSTICS'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20, marginBottom: 8 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>INTELLIGENCE / {data.entity_name ? data.entity_name.toUpperCase() : 'DIAGNOSTICS'}</span>
+            </div>
+            <h1 style={{ fontSize: '2.55rem', fontWeight: 900, lineHeight: 1.1 }}>Project Intelligence</h1>
+          </div>
+          <div style={{ width: 350 }}>
+             <ProjectLoader onSelect={handleEntitySelect} />
+          </div>
         </div>
-        <h1 style={{ fontSize: '2.55rem', fontWeight: 900, lineHeight: 1.1 }}>Project Intelligence</h1>
         <p style={{ color: 'var(--text-dim)', marginTop: 8, fontSize: '1rem', maxWidth: 500 }}>
           Real-time cross-correlation of financial, technical, and logistical laundry data.
         </p>
-      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '400px 1fr', gap: 40, alignItems: 'start' }}>
         
