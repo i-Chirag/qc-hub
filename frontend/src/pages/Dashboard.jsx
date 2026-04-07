@@ -109,7 +109,15 @@ export default function Dashboard() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <tbody>
                 {recent.map((item, idx) => (
-                  <tr key={idx} style={{ borderBottom: idx === recent.length - 1 ? 'none' : '1px solid var(--border)' }} className="vault-row">
+                  <tr 
+                    key={idx} 
+                    onClick={() => nav(`/report/${item.type}/${item.id}`)}
+                    style={{ 
+                      borderBottom: idx === recent.length - 1 ? 'none' : '1px solid var(--border)',
+                      cursor: 'pointer'
+                    }} 
+                    className="vault-row"
+                  >
                     <td style={{ padding: '20px 32px' }}>
                       <div style={{ fontWeight: 700, fontSize: '1rem' }}>{item.entity_name || item.name}</div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4 }}>{item.type} • {item.location}</div>

@@ -109,6 +109,15 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
           <button type="button" onClick={(e) => { e.preventDefault(); handlePrint(); }} className="glass-button" style={{ background: 'var(--accent)', color: '#000' }}>
              OFFICIAL PROPOSAL (PDF)
           </button>
+          {saved && (
+            <button 
+              onClick={() => window.location.href = '/insights'}
+              className="glass-button" 
+              style={{ background: 'rgba(255,255,255,0.05)', gridColumn: 'span 2' }}
+            >
+              GENERATE PROJECT INTELLIGENCE →
+            </button>
+          )}
         </div>
       </div>
 

@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../api/index.js'
 import ResultPanel from '../components/ResultPanel.jsx'
 import ProjectLoader from '../components/ProjectLoader.jsx'
@@ -98,12 +99,27 @@ const HOSPITALITY_TYPES = [
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function PLCalculator() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [form, setForm] = useState(DEFAULTS)
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [saved, setSaved] = useState(false)
   const [editChem, setEditChem] = useState(false)
+
+  // Handle incoming state from Cost Estimator
+  useEffect(() => {
+    if (location.state?.entity_name) {
+      setForm(f => ({
+        ...f,
+        entity_name: location.state.entity_name,
+        location: location.state.location || f.location,
+        total_investment: location.state.investment || f.total_investment,
+        capacity: location.state.capacity || f.capacity
+      }))
+    }
+  }, [location.state])
 
   const set = useCallback((key, val) => setForm(f => ({ ...f, [key]: val })), [])
 

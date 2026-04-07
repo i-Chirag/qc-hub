@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import ProjectLoader from '../components/ProjectLoader'
 
@@ -43,6 +44,7 @@ const Section = ({ title, icon, children }) => (
 )
 
 export default function SiteSurvey() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({ ...DEFAULTS })
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)

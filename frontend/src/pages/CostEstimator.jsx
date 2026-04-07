@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../api'
 import ProjectLoader from '../components/ProjectLoader'
 
@@ -31,10 +32,24 @@ const Section = ({ title, icon, children }) => (
 )
 
 export default function CostEstimator() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [form, setForm] = useState(DEFAULTS)
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  // Handle incoming state from Site Survey
+  useEffect(() => {
+    if (location.state?.entity_name) {
+      setForm(f => ({ 
+        ...f, 
+        entity_name: location.state.entity_name,
+        location: location.state.location || f.location,
+        target_kg: location.state.capacity || f.target_kg
+      }))
+    }
+  }, [location.state])
 
   const set = useCallback((key, val) => setForm(f => ({ ...f, [key]: val })), [])
 
@@ -195,7 +210,17 @@ export default function CostEstimator() {
                   </tr>
                 </tbody>
               </table>
-              <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }} className="no-print">
+              <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', gap: 12 }} className="no-print">
+                 <button 
+                   type="button" 
+                   onClick={() => navigate('/pl', { state: { entity_name: form.entity_name, location: form.location, investment: result.grand_total, capacity: form.target_kg } })}
+                   style={{ 
+                     padding: '12px 24px', borderRadius: 8, background: 'rgba(136, 231, 136, 0.1)', border: '1px solid var(--accent)', 
+                     color: 'var(--accent)', fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' 
+                   }}
+                 >
+                   PROCEED TO FINANCIAL P&L →
+                 </button>
                  <button type="button" onClick={(e) => { e.preventDefault(); handleSave(); }} disabled={saved} style={{ padding: '12px 32px', borderRadius: 8, background: saved ? 'rgba(136, 231, 136, 0.1)' : 'transparent', border: `1px solid ${saved ? 'var(--accent)' : 'var(--border)'}`, color: saved ? 'var(--accent)' : 'var(--text-dim)', fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: '0.75rem', cursor: saved ? 'default' : 'pointer' }}>
                     {saved ? '✓ PROPOSAL ARCHIVED' : 'SAVE TO PROJECTS'}
                  </button>
