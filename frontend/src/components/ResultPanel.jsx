@@ -83,12 +83,26 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
           <div style={{ fontFamily: 'var(--font-head)', color: goiColor, fontSize: '1rem', fontWeight: 700 }}>{r.goi_percentage}% PROFIT MARGIN</div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
           <Metric label="Yearly Profit" value={fmtLakh(r.annual_profit)} color="#88e788" />
           <Metric label="ROI" value={`${r.roi_percentage}%`} color="#a78bfa" />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+          <Metric label="Investment Tenure" value={`${r.payback_months || '—'} Mo`} color="#fbbf24" sub="Recovery Period" />
+          <Metric label="Monthly GOI" value={fmt(goi)} color={goiColor} />
+        </div>
+
+        {/* ──── Live Data Matrix ──── */}
+        <div className="glass-card" style={{ padding: '24px', marginBottom: 20, background: 'rgba(255,255,255,0.01)' }}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Technical Audit Details</div>
+          <Row label="Daily Capacity" value={fmtKg(r.kg_per_day)} />
+          <Row label="Billing Rate" value={`₹ ${r.avg_billing_rate} / kg`} />
+          <Row label="Monthly Revenue" value={fmt(r.monthly_revenue)} bold />
+          <Row label="Total OPEX" value={fmt(r.total_opex_monthly)} />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
           <button type="button" onClick={(e) => { e.preventDefault(); onSave(); }} disabled={saved} className="glass-button">
             {saved ? '✓ ARCHIVED' : 'SAVE PROJECT'}
           </button>
