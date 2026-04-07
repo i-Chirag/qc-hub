@@ -1,171 +1,128 @@
 """
-QC Hub — P&L Calculator Core Logic
-Laundry / Linen Services for Healthcare & Hospitality
+QC Hub — P&L Calculator Core Logic (Digital Twin Edition)
+Precision modeling for Laundry & Linen Services.
 """
-
-
-# ─── Constants ────────────────────────────────────────────────────────────────
-
-DEFAULT_CHEMICAL_COST_PER_KG = 3.0   # Rs per kg (editable via frontend)
-
-# Kg of linen per bed/room per day (industry benchmarks)
-KG_PER_BED_PER_DAY = {
-    'healthcare': {
-        'private': 3.5,
-        'government': 3.0,
-        'trust': 3.2,
-    },
-    'hospitality': {
-        'city': {
-            'star_3': 2.5,
-            'star_4': 3.0,
-            'star_5': 3.5,
-        },
-        'resort': {
-            'star_3': 3.2,
-            'star_4': 3.8,
-            'star_5': 4.5,
-        }
-    }
-}
-
-# Operating days per month
-OPERATING_DAYS = 26
-
-
-def get_kg_factor(data: dict) -> float:
-    """Return kg per unit (bed/room) per day based on industry & sub-type."""
-    industry = data.get('industry', '').lower()
-    sub_type = data.get('sub_type', '').lower()
-
-    if industry == 'healthcare':
-        return KG_PER_BED_PER_DAY['healthcare'].get(sub_type, 3.0)
-    elif industry == 'hospitality':
-        prop_type = data.get('property_type', 'city').lower()
-        rating    = data.get('star_rating', 'star_3').lower()
-        
-        # Get property group (defaults to city)
-        prop_group = KG_PER_BED_PER_DAY['hospitality'].get(prop_type, KG_PER_BED_PER_DAY['hospitality']['city'])
-        
-        # Get rating factor (defaults to 3-star)
-        return prop_group.get(rating, 2.5)
-    return 3.0
-
 
 def to_f(val):
     try:
+        if isinstance(val, str):
+            val = val.replace(',', '')
         return float(val) if val else 0.0
     except:
         return 0.0
 
-
 def calculate_pl(data: dict) -> dict:
     """
-    Main P&L calculation function.
+    Main P&L calculation function - Directly synchronized with Excel formulas.
     """
 
-    # ── Input Parsing ──────────────────────────────────────────────────────────
-    capacity        = to_f(data.get('capacity', 0))
-    occupancy_pct   = to_f(data.get('occupancy_pct', 80)) / 100
-    billing_rate    = to_f(data.get('billing_rate_per_kg', 0))
-    total_investment= to_f(data.get('total_investment', 0))
+    # ── 1. Input Parsing (Revenue Side) ────────────────────────────────────────
+    capacity        = to_f(data.get('capacity', 80))        # Rooms/Beds
+    linen_per_unit  = to_f(data.get('linen_per_unit', 7))   # KG per unit (Example: 7)
+    operating_days  = to_f(data.get('operating_days', 30))
+    billing_rate    = to_f(data.get('billing_rate_per_kg', 29))
+    
+    # Guest Laundry
+    guest_laundry_kg    = to_f(data.get('guest_laundry_kg', 500))
+    guest_laundry_rate  = to_f(data.get('guest_laundry_rate', 70))
+    
+    # Surcharges
+    clean_surcharge_rate= to_f(data.get('clean_surcharge_rate', 0)) # Revenue surcharge
+    
+    total_investment    = to_f(data.get('total_investment', 6246421))
 
-    electricity_rate    = to_f(data.get('electricity_rate', 0))
-    gas_rate            = to_f(data.get('gas_rate', 0))
-    water_cost_per_kg   = to_f(data.get('water_cost_per_kg', 0))
-    chemical_cost_per_kg= to_f(data.get('chemical_cost_per_kg', DEFAULT_CHEMICAL_COST_PER_KG))
-    labour_monthly      = to_f(data.get('labour_cost_monthly', 0))
-    linen_rental_charge = to_f(data.get('linen_rental_charge', 0))
-    misc_monthly        = to_f(data.get('miscellaneous_monthly', 0))
+    # ── 2. Input Parsing (Expense Side) ────────────────────────────────────────
+    electricity_rate        = to_f(data.get('electricity_rate', 11))
+    gas_rate                = to_f(data.get('gas_rate', 100))
+    water_cost_per_kg       = to_f(data.get('water_cost_per_kg', 0))
+    chemical_cost_per_kg    = to_f(data.get('chemical_cost_per_kg', 3))
+    
+    # Manpower Breakdown
+    operators_qty   = to_f(data.get('operators_qty', 6))
+    operators_rate  = to_f(data.get('operators_rate', 16800)) # Default to match Leela total 100800
+    manager_qty     = to_f(data.get('manager_qty', 1))
+    manager_rate    = to_f(data.get('manager_rate', 40000))
 
-    # Green Offsets (Monthly Rs)
-    green_water_offset  = to_f(data.get('green_water_offset', 0))
-    green_solar_offset  = to_f(data.get('green_solar_offset', 0))
+    # Overheads & Surcharges
+    rm_monthly              = to_f(data.get('rm_monthly', 10411))
+    food_cost_per_unit      = to_f(data.get('food_cost_total', 0)) # Manual entry
+    misc_monthly            = to_f(data.get('miscellaneous_monthly', 5600))
+    qc_supervision_monthly  = to_f(data.get('qc_supervision_monthly', 25000))
+    clean_billing_surcharge = to_f(data.get('clean_billing_surcharge', 0)) # Expense surcharge
+    linen_rental_cost_fixed = to_f(data.get('linen_rental_cost_fixed', 0))
 
-    heating_source  = data.get('heating_source', 'electric').lower()
-    linen_rental    = data.get('linen_rental', 'without').lower()
+    # ── 3. Volume Calculation ──────────────────────────────────────────────────
+    # Formula: Rooms * Linen/Unit * Days
+    # Example: 80 * 7 * 30 = 16,800
+    kg_per_month   = capacity * linen_per_unit * operating_days
 
-    # ── Volume Calculation ─────────────────────────────────────────────────────
-    kg_factor = get_kg_factor(data)
-    occupied_units = capacity * occupancy_pct
+    # ── 4. Revenue Calculation ─────────────────────────────────────────────────
+    laundry_revenue      = kg_per_month * billing_rate
+    guest_revenue        = guest_laundry_kg * guest_laundry_rate
+    surcharge_rev_total  = kg_per_month * clean_surcharge_rate
+    
+    total_revenue_net    = laundry_revenue + guest_revenue + surcharge_rev_total
 
-    kg_per_day     = occupied_units * kg_factor
-    kg_per_month   = kg_per_day * OPERATING_DAYS
+    # ── 5. Variable Cost Calculation ───────────────────────────────────────────
+    # Electricity: Excel benchmark = 0.30 units/kg
+    electricity_cost     = kg_per_month * 0.30 * electricity_rate
+    
+    # Png/Gas: Excel benchmark = 0.04 units/kg
+    gas_cost             = kg_per_month * 0.04 * gas_rate
+    
+    water_cost           = kg_per_month * water_cost_per_kg
+    chemical_cost        = kg_per_month * chemical_cost_per_kg
 
-    # ── Revenue ───────────────────────────────────────────────────────────────
-    billing_revenue = kg_per_month * billing_rate
-    linen_revenue   = (kg_per_month * linen_rental_charge) if linen_rental == 'with' else 0.0
-    total_revenue   = billing_revenue + linen_revenue
+    total_variable_cost  = electricity_cost + gas_cost + water_cost + chemical_cost
 
-    # ── Variable Costs ────────────────────────────────────────────────────────
-    # Electricity: approx 0.4 units per kg processed
-    electricity_cost = (kg_per_month * 0.4 * electricity_rate) - green_solar_offset
-    electricity_cost = max(0, electricity_cost)
+    # ── 6. Fixed Cost Calculation ──────────────────────────────────────────────
+    total_manpower_cost  = (operators_qty * operators_rate) + (manager_qty * manager_rate)
+    
+    total_fixed_cost     = total_manpower_cost + rm_monthly + food_cost_per_unit + \
+                           misc_monthly + qc_supervision_monthly + \
+                           clean_billing_surcharge + linen_rental_cost_fixed
 
-    # Gas / Heating
-    if heating_source == 'lpg':
-        # ~0.05 kg LPG per kg linen
-        gas_cost = kg_per_month * 0.05 * gas_rate
-    elif heating_source == 'png':
-        # ~0.06 SCM per kg linen
-        gas_cost = kg_per_month * 0.06 * gas_rate
-    else:
-        gas_cost = 0.0   # electric — captured in electricity_cost
+    # ── 7. Summary Metrics ─────────────────────────────────────────────────────
+    total_cost           = total_variable_cost + total_fixed_cost
+    gop                  = total_revenue_net - total_cost
+    gop_percentage       = (gop / total_revenue_net * 100) if total_revenue_net else 0
+    cost_per_kg          = (total_cost / kg_per_month) if kg_per_month else 0
 
-    water_cost      = (kg_per_month * water_cost_per_kg) - green_water_offset
-    water_cost      = max(0, water_cost)
-
-    chemical_cost   = kg_per_month * chemical_cost_per_kg
-
-    total_variable_cost = electricity_cost + gas_cost + water_cost + chemical_cost
-
-    # ── Fixed Costs ───────────────────────────────────────────────────────────
-    total_fixed_cost = labour_monthly + misc_monthly
-
-    # ── Totals ────────────────────────────────────────────────────────────────
-    total_cost  = total_variable_cost + total_fixed_cost
-    gross_profit= total_revenue - total_cost   # GOI (Gross Operating Income)
-
-    goi_pct     = (gross_profit / total_revenue * 100) if total_revenue else 0
-    cost_per_kg = (total_cost / kg_per_month) if kg_per_month else 0
-
-    # ── ROI ───────────────────────────────────────────────────────────────────
-    annual_profit   = gross_profit * 12
-    roi_pct         = (annual_profit / total_investment * 100) if total_investment else 0
-    payback_months  = (total_investment / gross_profit) if gross_profit > 0 else None
+    annual_gop           = gop * 12
+    roi_percentage       = (annual_gop / total_investment * 100) if total_investment else 0
+    payback_months       = (total_investment / gop) if gop > 0 else 0
 
     return {
+        # Metadata
+        'capacity': capacity,
+        'operating_days': operating_days,
+        
         # Volume
-        'kg_per_day':           round(kg_per_day, 2),
-        'kg_per_month':         round(kg_per_month, 2),
-        'occupied_units':       round(occupied_units, 1),
+        'kg_per_month': round(kg_per_month, 0),
+        
+        # Revenue Breakdown
+        'laundry_revenue_monthly': round(laundry_revenue, 0),
+        'guest_revenue_monthly':   round(guest_revenue, 0),
+        'total_revenue_net':       round(total_revenue_net, 0),
 
-        # Revenue
-        'billing_revenue':      round(billing_revenue, 2),
-        'linen_revenue':        round(linen_revenue, 2),
-        'total_revenue':        round(total_revenue, 2),
+        # Variable Cost Breakdown
+        'electricity_cost':   round(electricity_cost, 0),
+        'gas_cost':           round(gas_cost, 0),
+        'chemical_cost':      round(chemical_cost, 0),
+        'total_variable':     round(total_variable_cost, 0),
 
-        # Variable Costs
-        'electricity_cost':     round(electricity_cost, 2),
-        'gas_cost':             round(gas_cost, 2),
-        'water_cost':           round(water_cost, 2),
-        'chemical_cost':        round(chemical_cost, 2),
-        'total_variable_cost':  round(total_variable_cost, 2),
-
-        # Fixed Costs
-        'labour_monthly':       round(labour_monthly, 2),
-        'misc_monthly':         round(misc_monthly, 2),
-        'total_fixed_cost':     round(total_fixed_cost, 2),
+        # Fixed Cost Breakdown
+        'manpower_cost':      round(total_manpower_cost, 0),
+        'rm_cost':            round(rm_monthly, 0),
+        'qc_cost':            round(qc_supervision_monthly, 0),
+        'total_fixed':        round(total_fixed_cost, 0),
 
         # Summary
-        'total_cost':           round(total_cost, 2),
-        'gross_operating_income': round(gross_profit, 2),  # GOI
-        'goi_percentage':       round(goi_pct, 2),
-        'cost_per_kg':          round(cost_per_kg, 2),
-
-        # Investment
-        'total_investment':     round(total_investment, 2),
-        'annual_profit':        round(annual_profit, 2),
-        'roi_percentage':       round(roi_pct, 2),
-        'payback_months':       round(payback_months, 1) if payback_months else None,
+        'total_expanses':     round(total_cost, 0),
+        'gop':                round(gop, 0),
+        'gop_percentage':     round(gop_percentage, 1),
+        'cost_per_kg':        round(cost_per_kg, 2),
+        'annual_gop':         round(annual_gop, 0),
+        'roi_percentage':     round(roi_percentage, 1),
+        'payback_months':     round(payback_months, 1)
     }
