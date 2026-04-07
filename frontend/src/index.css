@@ -1,0 +1,172 @@
+:root {
+  /* ──── Color Palette (Pristine Obsidian) ──── */
+  --bg:          #08090b;
+  --bg-card:     rgba(17, 19, 24, 0.75);
+  --bg-muted:    #12151c;
+  --border:      rgba(255, 255, 255, 0.06);
+  --border-glow: rgba(136, 231, 136, 0.15);
+  
+  --accent:      #88e788;  /* Sage Green (Life/Cleanliness) */
+  --accent-glow: rgba(136, 231, 136, 0.4);
+  --accent2:     #a78bfa;  /* Soft Lavender (Textile Care) */
+  
+  --text:        #ffffff;
+  --text-dim:    #94a3b8;
+  --text-min:    #475569;
+  
+  --font-head:   'Outfit', sans-serif;
+  --font-body:   'Plus Jakarta Sans', sans-serif;
+  
+  --radius:      12px;
+  --radius-lg:   20px;
+  --glass:       backdrop-filter: blur(16px);
+  --shadow:      0 8px 32px rgba(0,0,0,0.5);
+  
+  --transition:  all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(136, 231, 136, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(167, 139, 250, 0.03) 0px, transparent 50%);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ──── Typography ──── */
+h1, h2, h3, h4 {
+  font-family: var(--font-head);
+  letter-spacing: -0.02em;
+}
+
+/* ──── Scrollbar ──── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-min); }
+
+/* ──── Components ──── */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.glass-card:hover {
+  border-color: rgba(136, 231, 136, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+
+input, select {
+  background: #161b22;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 12px 16px;
+  width: 100%;
+  transition: var(--transition);
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+select option {
+  background: #0d1117;
+  color: #ffffff;
+  padding: 12px;
+}
+
+input:focus, select:focus {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(136, 231, 136, 0.05);
+}
+
+label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ──── Animations ──── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+  animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* ──── Print Ecosystem ───────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+  
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  aside, 
+  nav, 
+  header, 
+  button, 
+  .no-print, 
+  footer {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .glass-card {
+    background: transparent !important;
+    border: 1px solid #eeeeee !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Force colors in Chrome/Safari */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
