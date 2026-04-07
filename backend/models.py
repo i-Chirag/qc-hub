@@ -77,3 +77,26 @@ class ProjectEstimate(db.Model):
             'created_at':   self.created_at.isoformat() if self.created_at else None,
             'type':         'budget'
         }
+
+class SustainabilityAudit(db.Model):
+    __tablename__ = 'sustainability_audits'
+    id = db.Column(db.Integer, primary_key=True)
+    entity_name = db.Column(db.String(100))
+    location = db.Column(db.String(100))
+    peak_load_kw = db.Column(db.Float)
+    water_savings_kld = db.Column(db.Float)
+    solar_capacity_kwp = db.Column(db.Float)
+    payload = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id':                 self.id,
+            'entity_name':        self.entity_name,
+            'location':           self.location,
+            'peak_load_kw':       self.peak_load_kw,
+            'water_savings_kld':  self.water_savings_kld,
+            'solar_capacity_kwp': self.solar_capacity_kwp,
+            'created_at':         self.created_at.isoformat() if self.created_at else None,
+            'type':               'green'
+        }

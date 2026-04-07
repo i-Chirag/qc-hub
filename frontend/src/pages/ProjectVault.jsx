@@ -7,6 +7,7 @@ const Badge = ({ type }) => {
     financial: { bg: 'rgba(96, 165, 250, 0.1)', color: '#60a5fa', label: 'FINANCIAL' },
     technical: { bg: 'rgba(52, 211, 153, 0.1)', color: '#34d399', label: 'TECHNICAL' },
     budget:    { bg: 'rgba(251, 191, 36, 0.1)',  color: '#fbbf24', label: 'BUDGET' },
+    green:     { bg: 'rgba(74, 222, 128, 0.1)',  color: '#4ade80', label: 'GREEN' },
   }[type] || { bg: 'rgba(255,255,255,0.05)', color: 'var(--text-dim)', label: 'OTHER' }
 
   return (
@@ -70,6 +71,7 @@ export default function ProjectVault() {
     total: projects.length,
     financial: projects.filter(p => p.type === 'financial').length,
     technical: projects.filter(p => p.type === 'technical').length,
+    green: projects.filter(p => p.type === 'green').length,
     avgRoi: projects.filter(p => p.type === 'financial' && p.roi_percentage).reduce((acc, curr) => acc + curr.roi_percentage, 0) / (projects.filter(p => p.type === 'financial' && p.roi_percentage).length || 1)
   }
 
@@ -111,6 +113,7 @@ export default function ProjectVault() {
           <option value="financial">Financial (P&L)</option>
           <option value="technical">Technical (Survey)</option>
           <option value="budget">Budget (Estimate)</option>
+          <option value="green">Sustainability (Green)</option>
         </select>
       </div>
 
@@ -143,6 +146,7 @@ export default function ProjectVault() {
                     {item.type === 'financial' && <span style={{ color: 'var(--accent)' }}>{item.roi_percentage}% ROI</span>}
                     {item.type === 'technical' && <span style={{ color: '#34d399' }}>{item.readiness_score}/100 SCORE</span>}
                     {item.type === 'budget'    && <span style={{ color: '#fbbf24' }}>₹ {(item.grand_total / 100000).toFixed(1)}L TOTAL</span>}
+                    {item.type === 'green'     && <span style={{ color: '#4ade80' }}>{item.solar_capacity_kwp} kWp SOLAR</span>}
                   </div>
                 </td>
                 <td style={{ padding: '20px 24px', fontSize: '0.8rem', color: 'var(--text-dim)' }}>

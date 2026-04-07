@@ -4,7 +4,8 @@ from calculator import calculate_pl
 from survey import run_site_audit
 from estimator import recommend_cost_estimate
 from insights import generate_ai_insights
-from models import db, Project, SiteSurvey, ProjectEstimate
+from sustainability import calculate_sustainability
+from models import db, Project, SiteSurvey, ProjectEstimate, SustainabilityAudit
 import os
 
 app = Flask(__name__)
@@ -126,18 +127,37 @@ def save_estimate():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@app.route('/api/insights/analyze', methods=['POST'])
-def analyze():
-    data = request.json # Contains pl_data, survey_data, and estimate_data
+# ─── Sustainability Intelligence ──────────────────────────────────────────────
+
+@app.route('/api/sustainability/analyze', methods=['POST'])
+def analyze_sustainability():
+    data = request.json
     try:
-        insights_res = generate_ai_insights(
-            data.get('pl_data'), 
-            data.get('survey_data'), 
-            data.get('estimate_data')
-        )
-        return jsonify(insights_res)
+        res = calculate_sustainability(data)
+        return jsonify(res)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@app.route('/api/sustainability/save', methods=['POST'])
+def save_sustainability():
+    data = request.json
+    import json
+    try:
+        new_audit = SustainabilityAudit(
+            entity_name=data.get('entity_name'),
+            location=data.get('location'),
+            peak_load_kw=data.get('peak_load_kw'),
+            water_savings_kld=data.get('water_metrics', {}).get('water_saved_kld'),
+            solar_capacity_kwp=data.get('solar_metrics', {}).get('recommended_kwp'),
+            payload=json.dumps(data)
+        )
+        db.session.add(new_audit)
+        db.session.commit()
+        return jsonify({"message": "Sustainability Audit archived", "id": new_audit.id}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+# ─── AI Insights ──────────────────────────────────────────────────────────────
 
 @app.route('/api/insights/latest', methods=['GET'])
 def analyze_latest():
@@ -203,15 +223,17 @@ def get_project(project_id):
 
 @app.route('/api/projects/all', methods=['GET'])
 def get_all_projects():
-    """Unifies P&L, Survey, and Estimate records for the main vault list."""
+    """Unifies P&L, Survey, Estimate, and Sustainability records for the main vault list."""
     pl_projects = Project.query.order_by(Project.created_at.desc()).all()
     surveys = SiteSurvey.query.order_by(SiteSurvey.created_at.desc()).all()
     estimates = ProjectEstimate.query.order_by(ProjectEstimate.created_at.desc()).all()
+    green_audits = SustainabilityAudit.query.order_by(SustainabilityAudit.created_at.desc()).all()
 
     # Combine and sort all types
     combined = [p.to_dict() for p in pl_projects] + \
                [s.to_dict() for s in surveys] + \
-               [e.to_dict() for e in estimates]
+               [e.to_dict() for e in estimates] + \
+               [g.to_dict() for g in green_audits]
     
     # Final sort by date
     combined.sort(key=lambda x: x['created_at'], reverse=True)
@@ -238,6 +260,13 @@ def delete_estimate(id):
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/api/sustainability/projects/<int:id>', methods=['DELETE'])
+def delete_green(id):
+    obj = SustainabilityAudit.query.get_or_404(id)
+    db.session.delete(obj)
+    db.session.commit()
+    return jsonify({'success': True})
+
 @app.route('/api/projects/detail/<string:p_type>/<int:p_id>', methods=['GET'])
 def get_project_detail(p_type, p_id):
     """Fetches full details for a specific project record from any module."""
@@ -247,6 +276,8 @@ def get_project_detail(p_type, p_id):
         item = SiteSurvey.query.get_or_404(p_id)
     elif p_type == 'budget':
         item = ProjectEstimate.query.get_or_404(p_id)
+    elif p_type == 'green':
+        item = SustainabilityAudit.query.get_or_404(p_id)
     else:
         return jsonify({"error": "Invalid project type"}), 400
         

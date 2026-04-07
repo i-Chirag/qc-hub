@@ -103,6 +103,27 @@ export const api = {
     return res.json()
   },
 
+  // Sustainability
+  analyzeSustainability: async (data) => {
+    const res = await fetch(`${API_BASE}/sustainability/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) throw new Error('Sustainability analysis failed')
+    return res.json()
+  },
+
+  saveSustainability: async (data) => {
+    const res = await fetch(`${API_BASE}/sustainability/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) throw new Error('Sustainability save failed')
+    return res.json()
+  },
+
   // Project Vault
   getVaultProjects: async () => {
     const res = await fetch(`${API_BASE}/projects/all`)
@@ -120,6 +141,7 @@ export const api = {
     let endpoint = `/pl/projects/${id}`
     if (type === 'technical') endpoint = `/survey/projects/${id}`
     if (type === 'budget')    endpoint = `/estimate/projects/${id}`
+    if (type === 'green')     endpoint = `/sustainability/projects/${id}`
     
     const res = await fetch(`${API_BASE}${endpoint}`, { method: 'DELETE' })
     if (!res.ok) throw new Error('Delete failed')

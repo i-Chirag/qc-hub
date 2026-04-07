@@ -89,6 +89,7 @@ export default function Dashboard() {
         <ModuleCard title="P&L Calculator" desc="Financial feasibility and ROI analysis." icon="󱔗" path="/pl" color="#88e788" live={true} />
         <ModuleCard title="Site Survey" desc="Technical infrastructure and gap analysis." icon="󱝿" path="/survey" color="#a78bfa" live={true} />
         <ModuleCard title="Cost Estimator" desc="Bespoke machinery mix and CapEx estimation." icon="󱗆" path="/estimator" color="#60a5fa" live={true} />
+        <ModuleCard title="Green Operations" desc="Water & Solar ROI analysis." icon="🌿" path="/green" color="#4ade80" live={true} />
         <ModuleCard title="AI Intelligence" desc="Deep cross-module diagnostic analysis." icon="󱚧" path="/insights" color="#a855f7" live={true} />
         <ModuleCard title="Project Vault" desc="Manage and compare all your saved audits." icon="󱓡" path="/vault" color="var(--accent)" live={true} status="NEW" />
       </div>
