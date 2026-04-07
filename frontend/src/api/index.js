@@ -110,6 +110,12 @@ export const api = {
     return res.json()
   },
 
+  getProjectDetail: async (type, id) => {
+    const res = await fetch(`${API_BASE}/projects/detail/${type}/${id}`)
+    if (!res.ok) throw new Error('Failed to fetch project detail')
+    return res.json()
+  },
+
   deleteVaultProject: async (type, id) => {
     let endpoint = `/pl/projects/${id}`
     if (type === 'technical') endpoint = `/survey/projects/${id}`

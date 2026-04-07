@@ -6,6 +6,7 @@ import SiteSurvey from './pages/SiteSurvey.jsx'
 import CostEstimator from './pages/CostEstimator.jsx'
 import AIInsights from './pages/AIInsights.jsx'
 import ProjectVault from './pages/ProjectVault.jsx'
+import ExecutiveReport from './pages/ExecutiveReport.jsx'
 
 const NAV = [
   { path: '/',          label: 'Dashboard',      icon: '󱓞' },
@@ -140,6 +141,7 @@ export default function App() {
             <Route path="/estimator" element={<CostEstimator />} />
             <Route path="/insights"  element={<AIInsights />} />
             <Route path="/vault"     element={<ProjectVault />} />
+            <Route path="/report/:type/:id" element={<ExecutiveReport />} />
           </Routes>
         </main>
       </div>

@@ -238,6 +238,22 @@ def delete_estimate(id):
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/api/projects/detail/<string:p_type>/<int:p_id>', methods=['GET'])
+def get_project_detail(p_type, p_id):
+    """Fetches full details for a specific project record from any module."""
+    if p_type == 'financial':
+        item = Project.query.get_or_404(p_id)
+    elif p_type == 'technical':
+        item = SiteSurvey.query.get_or_404(p_id)
+    elif p_type == 'budget':
+        item = ProjectEstimate.query.get_or_404(p_id)
+    else:
+        return jsonify({"error": "Invalid project type"}), 400
+        
+    data = item.to_dict()
+    data['type'] = p_type
+    return jsonify(data)
+
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
 

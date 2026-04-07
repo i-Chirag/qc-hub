@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 
 const Badge = ({ type }) => {
@@ -29,6 +30,7 @@ const StatCard = ({ label, value, icon, color }) => (
 )
 
 export default function ProjectVault() {
+  const navigate = useNavigate()
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -146,10 +148,17 @@ export default function ProjectVault() {
                 <td style={{ padding: '20px 24px', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
                   {new Date(item.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </td>
-                <td style={{ padding: '20px 24px', textAlign: 'right' }}>
+                <td style={{ padding: '20px 24px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <button 
+                    onClick={() => navigate(`/report/${item.type}/${item.id}`)}
+                    style={{ background: 'var(--accent)', border: 'none', color: '#061706', cursor: 'pointer', padding: '6px 14px', borderRadius: 6, fontSize: '0.7rem', fontWeight: 800, marginRight: 12, transition: 'transform 0.2s' }}
+                    className="hover-scale"
+                  >
+                    MASTER REPORT
+                  </button>
                   <button 
                     onClick={() => handleDelete(item.type, item.id)}
-                    style={{ background: 'transparent', border: 'none', color: '#f87171', opacity: 0.6, cursor: 'pointer', padding: '8px', fontSize: '1.2rem' }}
+                    style={{ background: 'transparent', border: 'none', color: '#f87171', opacity: 0.6, cursor: 'pointer', padding: '8px', fontSize: '1.2rem', verticalAlign: 'middle' }}
                     title="Delete Record"
                   >
                     󱂩
