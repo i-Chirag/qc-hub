@@ -76,26 +76,28 @@ export default function CostEstimator() {
     <div style={{ padding: '64px 48px', maxWidth: 1400, margin: '0 auto' }}>
       
       {/* ──── Header ──── */}
-      <div style={{ marginBottom: 48 }} className="animate-fade no-print">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>CAPEX / INVESTMENT</span>
+      <div className="no-print">
+        <div style={{ marginBottom: 48 }} className="animate-fade">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>CAPEX / INVESTMENT</span>
+          </div>
+          <h1 style={{ fontSize: '2.55rem', fontWeight: 900, lineHeight: 1.1 }}>Project Cost Estimator</h1>
+          <p style={{ color: 'var(--text-dim)', marginTop: 8, fontSize: '1rem', maxWidth: 500 }}>
+            automated BOQ generation and machinery mix recommendation for Electrolux Professional setups.
+          </p>
         </div>
-        <h1 style={{ fontSize: '2.55rem', fontWeight: 900, lineHeight: 1.1 }}>Project Cost Estimator</h1>
-        <p style={{ color: 'var(--text-dim)', marginTop: 8, fontSize: '1rem', maxWidth: 500 }}>
-          automated BOQ generation and machinery mix recommendation for Electrolux Professional setups.
-        </p>
-      </div>
 
-      <ProjectLoader 
-        currentType="budget" 
-        onSelect={(p) => {
-          set('entity_name', p.entity_name || p.name);
-          set('location', p.location);
-          if (p.target_kg) set('target_kg', p.target_kg);
-          // If from P&L:
-          if (p.capacity) set('target_kg', p.capacity);
-        }} 
-      />
+        <ProjectLoader 
+          currentType="budget" 
+          onSelect={(p) => {
+            set('entity_name', p.entity_name || p.name);
+            set('location', p.location);
+            if (p.target_kg) set('target_kg', p.target_kg);
+            // If from P&L:
+            if (p.capacity) set('target_kg', p.capacity);
+          }} 
+        />
+      </div>
 
       <div className="no-print" style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: 40, alignItems: 'start' }}>
         

@@ -99,29 +99,33 @@ export default function SiteSurvey() {
     <div style={{ padding: '40px', maxWidth: 1400, margin: '0 auto' }}>
       
       {/* ──── Header ──── */}
-      <div style={{ marginBottom: 40 }} className="animate-fade">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>ENGINEERING & AUDIT</span>
+      <div className="no-print">
+        <div style={{ marginBottom: 40 }} className="animate-fade">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.2em' }}>ENGINEERING & AUDIT</span>
+          </div>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1.1 }}>Site Readiness Audit</h1>
+          <p style={{ color: 'var(--text-dim)', marginTop: 8, fontSize: '0.95rem', maxWidth: 500 }}>
+            Precision validation for Electrolux Professional machinery installation and utility compliance.
+          </p>
         </div>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1.1 }}>Site Readiness Audit</h1>
-        <p style={{ color: 'var(--text-dim)', marginTop: 8, fontSize: '0.95rem', maxWidth: 500 }}>
-          Precision validation for Electrolux Professional machinery installation and utility compliance.
-        </p>
       </div>
 
-      <ProjectLoader 
-        currentType="technical" 
-        onSelect={(p) => {
-          set('entity_name', p.entity_name || p.name);
-          set('location', p.location);
-          // If loading from a P&L, there's no target_model, but we can set the name
-        }} 
-      />
+      <div className="no-print">
+        <ProjectLoader 
+          currentType="technical" 
+          onSelect={(p) => {
+            set('entity_name', p.entity_name || p.name);
+            set('location', p.location);
+            // If loading from a P&L, there's no target_model, but we can set the name
+          }} 
+        />
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 440px' : '1fr', gap: 32, alignItems: 'start' }}>
         
         {/* ──── Input Form ──── */}
-        <div style={{ maxWidth: 800 }}>
+        <div className="no-print" style={{ maxWidth: 800 }}>
           <Section title="Asset Identification" icon="◩">
             <Field label="Installation Entity" wide>
               <input value={form.entity_name} onChange={e => set('entity_name', e.target.value)} placeholder="e.g. Grand Resort & Spa" />

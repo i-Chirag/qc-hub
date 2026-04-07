@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+      <div id="main-layout" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
         
         {/* ──── Sidebar ─────────────────────────────────────────────── */}
         <aside style={{

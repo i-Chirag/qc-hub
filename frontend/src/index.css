@@ -119,48 +119,59 @@ label {
   animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-/* ──── Print Ecosystem ───────────────────────────────────────── */
+/* ──── Print Ecosystem (High-Contrast Corporate Reset) ─────── */
 @media print {
   @page {
     size: A4;
-    margin: 20mm;
+    margin: 15mm;
   }
   
-  body {
+  /* Reset Backgrounds for Ink Saving */
+  html, body {
     background: #ffffff !important;
     color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  aside, 
-  nav, 
-  header, 
-  button, 
-  .no-print, 
-  footer {
+  /* Hide UI Noise */
+  aside, nav, header, .no-print, button, select, input, .glass-button {
     display: none !important;
   }
 
-  main {
+  /* Force Layout Isolation */
+  #main-layout {
+    display: block !important;
+    width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
-    width: 100% !important;
   }
 
+  main {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    padding: 0 !important;
+  }
+
+  /* Convert Glass Cards into clean document blocks */
   .glass-card {
     background: transparent !important;
-    border: 1px solid #eeeeee !important;
+    border: none !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     padding: 0 !important;
     margin: 0 !important;
-    border: none !important;
   }
 
   .print-only {
     display: block !important;
+    width: 100% !important;
   }
 
-  /* Force colors in Chrome/Safari */
+  /* Re-enable colors for charts/badges in professional mode */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

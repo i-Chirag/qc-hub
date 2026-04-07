@@ -140,7 +140,7 @@ export default function PLCalculator() {
   return (
     <div style={{ padding: '64px 48px', maxWidth: 1400, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: 56 }} className="animate-fade">
+      <div style={{ marginBottom: 56 }} className="animate-fade no-print">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-head)', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.2em' }}>OPERATIONS / CORE</span>
         </div>
@@ -150,20 +150,22 @@ export default function PLCalculator() {
         </p>
       </div>
 
-      <ProjectLoader 
-        currentType="financial" 
-        onSelect={(p) => {
-          set('entity_name', p.entity_name || p.name);
-          set('location', p.location);
-          if (p.industry) setIndustry(p.industry);
-          if (p.category) set('category', p.category);
-        }} 
-      />
+      <div className="no-print">
+        <ProjectLoader 
+          currentType="financial" 
+          onSelect={(p) => {
+            set('entity_name', p.entity_name || p.name);
+            set('location', p.location);
+            if (p.industry) setIndustry(p.industry);
+            if (p.category) set('category', p.category);
+          }} 
+        />
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 480px' : '1fr', gap: 40, alignItems: 'start' }}>
         
         {/* ── Forms ────────────────────────────────────────────────────────── */}
-        <div>
+        <div className="no-print">
           <Section title="Entity Information" icon="◩">
             <Field label="Name of Entity" wide>
               <input value={form.entity_name} onChange={e => set('entity_name', e.target.value)} placeholder="e.g. St. Jude Regional" />
