@@ -170,3 +170,13 @@ label {
 .print-only {
   display: none;
 }
+
+/* ──── Project Vault ──── */
+.vault-row:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.vault-row button:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+}

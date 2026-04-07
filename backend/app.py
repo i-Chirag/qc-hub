@@ -201,10 +201,40 @@ def get_project(project_id):
     return jsonify(project.to_dict())
 
 
+@app.route('/api/projects/all', methods=['GET'])
+def get_all_projects():
+    """Unifies P&L, Survey, and Estimate records for the main vault list."""
+    pl_projects = Project.query.order_by(Project.created_at.desc()).all()
+    surveys = SiteSurvey.query.order_by(SiteSurvey.created_at.desc()).all()
+    estimates = ProjectEstimate.query.order_by(ProjectEstimate.created_at.desc()).all()
+
+    # Combine and sort all types
+    combined = [p.to_dict() for p in pl_projects] + \
+               [s.to_dict() for s in surveys] + \
+               [e.to_dict() for e in estimates]
+    
+    # Final sort by date
+    combined.sort(key=lambda x: x['created_at'], reverse=True)
+    return jsonify(combined)
+
 @app.route('/api/pl/projects/<int:project_id>', methods=['DELETE'])
 def delete_project(project_id):
     project = Project.query.get_or_404(project_id)
     db.session.delete(project)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/survey/projects/<int:id>', methods=['DELETE'])
+def delete_survey(id):
+    obj = SiteSurvey.query.get_or_404(id)
+    db.session.delete(obj)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/estimate/projects/<int:id>', methods=['DELETE'])
+def delete_estimate(id):
+    obj = ProjectEstimate.query.get_or_404(id)
+    db.session.delete(obj)
     db.session.commit()
     return jsonify({'success': True})
 

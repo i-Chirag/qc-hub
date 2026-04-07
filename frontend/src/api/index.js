@@ -100,5 +100,22 @@ export const api = {
     const res = await fetch(`${API_BASE}/insights/latest`)
     if (!res.ok) throw new Error('Failed to fetch latest insights')
     return res.json()
+  },
+
+  // Project Vault
+  getVaultProjects: async () => {
+    const res = await fetch(`${API_BASE}/projects/all`)
+    if (!res.ok) throw new Error('Failed to fetch vault projects')
+    return res.json()
+  },
+
+  deleteVaultProject: async (type, id) => {
+    let endpoint = `/pl/projects/${id}`
+    if (type === 'technical') endpoint = `/survey/projects/${id}`
+    if (type === 'budget')    endpoint = `/estimate/projects/${id}`
+    
+    const res = await fetch(`${API_BASE}${endpoint}`, { method: 'DELETE' })
+    if (!res.ok) throw new Error('Delete failed')
+    return res.json()
   }
 }

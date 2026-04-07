@@ -126,9 +126,35 @@ Done! Your site will be live at `https://your-project.vercel.app`
 ## Roadmap
 
 - [x] P&L / GOI Calculator
-- [ ] Site Survey Module
-- [ ] Cost Estimator
-- [ ] AI/ML Insights (forecasting, anomaly detection)
-- [ ] Multi-user auth
-- [ ] PDF report export
+- [x] Site Survey Module
+- [x] Cost Estimator
+- [x] AI/ML Insights (Diagnostics)
+- [ ] **Phase 1: Project Command Center** (Lifecycle Tracking)
+- [ ] **Phase 2: Investment-Grade Reports** (Pro PDF Engine)
+- [ ] **Phase 3: Sustainability Audit** (Water/Solar STP ROI)
+- [ ] **Phase 4: Enterprise Mode** (Auth/Login/Multi-Tenant)
 - [ ] Mobile app (React Native)
+
+---
+
+## 🌟 QC Hub Elite — The Roadmap
+
+### 1. The Project Command Center
+Move from "calculating" to "managing."
+*   **Project Vault:** A centralized table to view, edit, and track status (`Draft` → `Surveyed` → `Approved`).
+*   **A/B Comparison:** Side-by-side ROI comparison for different fuel sources (Electric vs. Steam).
+
+### 2. Professional "Investment-Grade" Reports
+Generate the documents needed to close a deal.
+*   **Executive Summary:** Automated PDF with branding, charts, and 5-year ROI projections.
+*   **Technical Audit:** Professional site-readiness reports for engineering teams.
+
+### 3. Sustainability & Optimization
+The future of laundry is Green.
+*   **Water Recycling ROI:** Analysis of STP/ETP (Sewage Treatment) payback.
+*   **Solar ROI:** Sizing solar panels based on laundry peak loads.
+*   **AI Optimizer:** Machine mix suggestions for lowest peak load consumption.
+
+### 4. Enterprise Infrastructure
+*   **Authentication:** Multi-user login/signup.
+*   **Organization Mode:** Manage distinct clients (e.g., Hotel chains vs. Industrial laundries) under one sales account.

@@ -26,7 +26,8 @@ class Project(db.Model):
             'category':   self.category,
             'annual_profit': self.annual_profit,
             'roi_percentage': self.roi_percentage,
-            'created_at': self.created_at.isoformat(),
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'type':       'financial'
         }
 
 class SiteSurvey(db.Model):
@@ -43,6 +44,19 @@ class SiteSurvey(db.Model):
     floor_loading_ok = db.Column(db.Boolean)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def to_dict(self):
+        return {
+            'id':               self.id,
+            'entity_name':      self.entity_name,
+            'location':         self.location,
+            'readiness_score':  self.readiness_score,
+            'readiness_status': self.readiness_status,
+            'target_capacity':  self.target_capacity,
+            'available_kw':     self.available_kw,
+            'created_at':       self.created_at.isoformat() if self.created_at else None,
+            'type':             'technical'
+        }
+
 class ProjectEstimate(db.Model):
     __tablename__ = 'estimates'
     id = db.Column(db.Integer, primary_key=True)
@@ -52,3 +66,14 @@ class ProjectEstimate(db.Model):
     grand_total = db.Column(db.Float)
     items_json = db.Column(db.Text) # Storing the list as a JSON string
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id':           self.id,
+            'entity_name':  self.entity_name,
+            'location':     self.location,
+            'target_kg':    self.target_kg,
+            'grand_total':  self.grand_total,
+            'created_at':   self.created_at.isoformat() if self.created_at else None,
+            'type':         'budget'
+        }
