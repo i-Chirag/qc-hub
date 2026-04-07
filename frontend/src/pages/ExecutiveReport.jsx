@@ -74,7 +74,7 @@ export default function ExecutiveReport() {
               <StatCard label="Payback Time" value={(pl.payback_months || '—') + ' Mo'} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, marginBottom: 40 }}>
                <div>
                   <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: 10, marginBottom: 20 }}>FINANCIAL OUTLOOK</h3>
                   <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: '#444' }}>
@@ -83,11 +83,33 @@ export default function ExecutiveReport() {
                   </p>
                </div>
                <div style={{ height: 200, background: '#f8fafc', borderRadius: 12, padding: 20 }}>
-                  {/* Small ROI Indicator placeholder */}
                   <div style={{ textAlign: 'center', paddingTop: 40 }}>
                     <div style={{ fontSize: '3rem', fontWeight: 900, color: '#10b981' }}>{pl.roi_percentage}%</div>
                     <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666' }}>PROJECTED ANNUAL RETURN</div>
                   </div>
+               </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, borderTop: '2px solid #eee', paddingTop: 40 }}>
+               <div>
+                  <h4 style={{ fontSize: '0.8rem', fontWeight: 900, marginBottom: 15, textTransform: 'uppercase' }}>Operational Audit Parameters</h4>
+                  <Table data={[
+                    ['Target Capacity', (pl.kg_per_day || 0).toLocaleString() + ' KG/Day'],
+                    ['Industry Sector', pl.industry || 'Commercial'],
+                    ['Project Category', pl.category || 'High Volume'],
+                    ['Working Cycle', (pl.operational_days || 26) + ' Days/Month'],
+                    ['Investment Recovery (Tenure)', (pl.payback_months || '—') + ' Months']
+                  ]} />
+               </div>
+               <div>
+                  <h4 style={{ fontSize: '0.8rem', fontWeight: 900, marginBottom: 15, textTransform: 'uppercase' }}>Monthly Performance Matrix</h4>
+                  <Table data={[
+                    ['Estimated Revenue', fmt(pl.monthly_revenue)],
+                    ['Direct Operational Costs', fmt(pl.total_opex_monthly)],
+                    ['Estimated Monthly GOI', fmt(pl.gross_operating_income)],
+                    ['Net Operating Margin', pl.goi_percentage + '%'],
+                    ['Annual Cashflow Projection', fmtLakh(pl.annual_profit)]
+                  ]} />
                </div>
             </div>
           </>

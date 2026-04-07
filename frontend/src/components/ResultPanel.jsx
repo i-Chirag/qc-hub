@@ -160,10 +160,65 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
            </div>
         </div>
 
+        {/* ──── RESTORED DATA DENSITY TABLES ───────────────────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, borderTop: '2px solid #000', paddingTop: 40 }}>
+           <div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: 20, textTransform: 'uppercase' }}>Operational Parameters</div>
+              <Table data={[
+                ['Target Capacity', fmtKg(r.kg_per_day)],
+                ['Industry Cluster', r.industry || 'General'],
+                ['Machine Setup', r.machine_count + ' Units'],
+                ['Shift Duration', r.shift_h + ' Hours'],
+                ['Billing Rate (Avg)', '₹ ' + r.avg_billing_rate + ' / kg'],
+                ['Working Days', r.operational_days + ' Days/Mo']
+              ]} />
+           </div>
+           <div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: 20, textTransform: 'uppercase' }}>Monthly Financial Audit</div>
+              <Table data={[
+                ['Gross Revenue', fmt(r.monthly_revenue)],
+                ['Variable OPEX', fmt(r.total_opex_monthly)],
+                ['Power & Fuel', fmt(r.electricity_cost + r.gas_cost)],
+                ['Labour Force', fmt(r.labour_monthly)],
+                ['Linen Chemicals', fmt(r.chemical_cost)],
+                ['Total Monthly GOI', fmt(r.gross_operating_income)],
+                ['Net Profit Margin', r.goi_percentage + '%']
+              ]} />
+           </div>
+        </div>
+
+        <div style={{ marginTop: 40, background: '#f8fafc', padding: 24, border: '1px solid #eee', borderRadius: 8 }}>
+           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                 <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666' }}>INVESTMENT RECOVERY TENURE</div>
+                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#10b981' }}>{r.payback_months || '—'} MONTHS</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                 <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666' }}>ESTIMATED ANNUAL RETURN</div>
+                 <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{r.roi_percentage}% ROI</div>
+              </div>
+           </div>
+        </div>
+
         <div style={{ marginTop: 60, borderTop: '1px solid #eee', paddingTop: 20, fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>
            © {new Date().getFullYear()} Quality Control Hub (QC Hub) | This is a confidential financial simulation.
         </div>
       </div>
     </div>
+  )
+}
+
+function Table({ data }) {
+  return (
+    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+      <tbody>
+        {data.map((row, i) => (
+          <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
+            <td style={{ padding: '10px 0', color: '#666' }}>{row[0]}</td>
+            <td style={{ padding: '10px 0', textAlign: 'right', fontWeight: 700 }}>{row[1]}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }
