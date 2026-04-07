@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
 import { api } from '../api'
+import ProjectLoader from '../components/ProjectLoader'
 
 const DEFAULTS = {
   entity_name: '',
@@ -84,6 +84,17 @@ export default function CostEstimator() {
           automated BOQ generation and machinery mix recommendation for Electrolux Professional setups.
         </p>
       </div>
+
+      <ProjectLoader 
+        currentType="budget" 
+        onSelect={(p) => {
+          set('entity_name', p.entity_name || p.name);
+          set('location', p.location);
+          if (p.target_kg) set('target_kg', p.target_kg);
+          // If from P&L:
+          if (p.capacity) set('target_kg', p.capacity);
+        }} 
+      />
 
       <div className="no-print" style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: 40, alignItems: 'start' }}>
         

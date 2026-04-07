@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { api } from '../api/index.js'
 import ResultPanel from '../components/ResultPanel.jsx'
+import ProjectLoader from '../components/ProjectLoader.jsx'
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
 const DEFAULTS = {
@@ -148,6 +149,16 @@ export default function PLCalculator() {
           Precision modeling of gross operating metrics for laundry and linen services.
         </p>
       </div>
+
+      <ProjectLoader 
+        currentType="financial" 
+        onSelect={(p) => {
+          set('entity_name', p.entity_name || p.name);
+          set('location', p.location);
+          if (p.industry) setIndustry(p.industry);
+          if (p.category) set('category', p.category);
+        }} 
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 480px' : '1fr', gap: 40, alignItems: 'start' }}>
         

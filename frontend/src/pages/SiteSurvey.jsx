@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
 import { api } from '../api'
+import ProjectLoader from '../components/ProjectLoader'
 
 const ELECTROLUX_MODELS = [
   { id: 'WH6-6',  name: 'WH6-6 (6kg Batch)' },
@@ -107,6 +107,15 @@ export default function SiteSurvey() {
           Precision validation for Electrolux Professional machinery installation and utility compliance.
         </p>
       </div>
+
+      <ProjectLoader 
+        currentType="technical" 
+        onSelect={(p) => {
+          set('entity_name', p.entity_name || p.name);
+          set('location', p.location);
+          // If loading from a P&L, there's no target_model, but we can set the name
+        }} 
+      />
 
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 440px' : '1fr', gap: 32, alignItems: 'start' }}>
         
