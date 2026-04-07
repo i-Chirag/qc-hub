@@ -146,9 +146,7 @@ def save_sustainability():
         new_audit = SustainabilityAudit(
             entity_name=data.get('entity_name'),
             location=data.get('location'),
-            peak_load_kw=data.get('peak_load_kw'),
             water_savings_kld=data.get('water_metrics', {}).get('water_saved_kld'),
-            solar_capacity_kwp=data.get('solar_metrics', {}).get('recommended_kwp'),
             payload=json.dumps(data)
         )
         db.session.add(new_audit)

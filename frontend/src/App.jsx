@@ -15,7 +15,7 @@ const NAV = [
   { path: '/survey',    label: 'Site Survey',    icon: '󱝿' },
   { path: '/estimator', label: 'Cost Estimator', icon: '󱗆' },
   { path: '/insights',  label: 'AI Insights',    icon: '󱚧' },
-  { path: '/green',     label: 'Green Ops',      icon: '🌿' },
+  { path: '/green',     label: 'Water ROI',      icon: '💧' },
   { path: '/vault',     label: 'Project Vault',  icon: '󱓡' },
 ]
 
