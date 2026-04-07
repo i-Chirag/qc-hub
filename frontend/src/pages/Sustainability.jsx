@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../api'
 import ProjectLoader from '../components/ProjectLoader'
 
@@ -13,6 +14,8 @@ const Stat = ({ label, value, sub, color }) => (
 )
 
 export default function Sustainability() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [form, setForm] = useState({
     entity_name: '',
     location: '',
@@ -22,6 +25,19 @@ export default function Sustainability() {
     electricity_rate: 10,
     items: []
   })
+
+  // Handle incoming state from Cost Estimator
+  useEffect(() => {
+    if (location.state?.entity_name) {
+      setForm(f => ({
+        ...f,
+        entity_name: location.state.entity_name,
+        location: location.state.location || f.location,
+        daily_kg: location.state.daily_kg || f.daily_kg,
+        items: location.state.items || f.items
+      }))
+    }
+  }, [location.state])
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -156,7 +172,24 @@ export default function Sustainability() {
                 </div>
               </div>
 
-              <div style={{ marginTop: 32, textAlign: 'right' }}>
+              <div style={{ marginTop: 32, display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
+                 <button 
+                   onClick={() => navigate('/pl', { 
+                     state: { 
+                       entity_name: form.entity_name, 
+                       location: form.location, 
+                       capacity: form.daily_kg,
+                       green_water_offset: result.water_metrics.monthly_savings,
+                       green_solar_offset: result.solar_metrics.monthly_savings
+                     } 
+                   })}
+                   style={{
+                     padding: '16px 24px', background: 'rgba(136, 231, 136, 0.1)', border: '1px solid var(--accent)', borderRadius: 12,
+                     color: 'var(--accent)', fontFamily: 'var(--font-head)', fontWeight: 800, cursor: 'pointer', transition: '0.2s'
+                   }}
+                 >
+                   PROCEED TO FINANCIAL P&L (WITH SAVINGS) →
+                 </button>
                  <button onClick={handleSave} disabled={saved} style={{
                    padding: '16px 40px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 12,
                    color: saved ? '#4ade80' : 'var(--text)', fontFamily: 'var(--font-head)', fontWeight: 800, cursor: 'pointer'

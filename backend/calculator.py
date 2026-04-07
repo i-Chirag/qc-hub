@@ -78,6 +78,10 @@ def calculate_pl(data: dict) -> dict:
     linen_rental_charge = to_f(data.get('linen_rental_charge', 0))
     misc_monthly        = to_f(data.get('miscellaneous_monthly', 0))
 
+    # Green Offsets (Monthly Rs)
+    green_water_offset  = to_f(data.get('green_water_offset', 0))
+    green_solar_offset  = to_f(data.get('green_solar_offset', 0))
+
     heating_source  = data.get('heating_source', 'electric').lower()
     linen_rental    = data.get('linen_rental', 'without').lower()
 
@@ -95,7 +99,8 @@ def calculate_pl(data: dict) -> dict:
 
     # ── Variable Costs ────────────────────────────────────────────────────────
     # Electricity: approx 0.4 units per kg processed
-    electricity_cost = kg_per_month * 0.4 * electricity_rate
+    electricity_cost = (kg_per_month * 0.4 * electricity_rate) - green_solar_offset
+    electricity_cost = max(0, electricity_cost)
 
     # Gas / Heating
     if heating_source == 'lpg':
@@ -107,7 +112,9 @@ def calculate_pl(data: dict) -> dict:
     else:
         gas_cost = 0.0   # electric — captured in electricity_cost
 
-    water_cost      = kg_per_month * water_cost_per_kg
+    water_cost      = (kg_per_month * water_cost_per_kg) - green_water_offset
+    water_cost      = max(0, water_cost)
+
     chemical_cost   = kg_per_month * chemical_cost_per_kg
 
     total_variable_cost = electricity_cost + gas_cost + water_cost + chemical_cost

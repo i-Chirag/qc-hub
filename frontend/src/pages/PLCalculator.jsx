@@ -27,6 +27,8 @@ const DEFAULTS = {
   linen_rental_charge: '',
   miscellaneous_monthly: '',
   occupancy_pct: '80',
+  green_water_offset: 0,
+  green_solar_offset: 0,
 }
 
 // ── Field helpers ─────────────────────────────────────────────────────────────
@@ -116,7 +118,9 @@ export default function PLCalculator() {
         entity_name: location.state.entity_name,
         location: location.state.location || f.location,
         total_investment: location.state.investment || f.total_investment,
-        capacity: location.state.capacity || f.capacity
+        capacity: location.state.capacity || f.capacity,
+        green_water_offset: location.state.green_water_offset || 0,
+        green_solar_offset: location.state.green_solar_offset || 0
       }))
     }
   }, [location.state])
@@ -299,6 +303,20 @@ export default function PLCalculator() {
             <Field label="Miscellaneous / Month (₹)">
               <input type="number" value={form.miscellaneous_monthly} onChange={e => set('miscellaneous_monthly', e.target.value)} />
             </Field>
+
+            {(form.green_water_offset > 0 || form.green_solar_offset > 0) && (
+              <div style={{ gridColumn: 'span 2', marginTop: 12, padding: 16, background: 'rgba(74, 222, 128, 0.05)', border: '1px solid rgba(74, 222, 128, 0.1)', borderRadius: 12 }}>
+                 <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#4ade80', textTransform: 'uppercase', marginBottom: 12 }}>Sustainability Offsets Applied</div>
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <Field label="Water Saving Credit (₹)">
+                       <input type="number" value={form.green_water_offset} onChange={e => set('green_water_offset', e.target.value)} style={{ color: '#4ade80', borderColor: 'rgba(74,222,128,0.2)' }} />
+                    </Field>
+                    <Field label="Solar Power Credit (₹)">
+                       <input type="number" value={form.green_solar_offset} onChange={e => set('green_solar_offset', e.target.value)} style={{ color: '#4ade80', borderColor: 'rgba(74,222,128,0.2)' }} />
+                    </Field>
+                 </div>
+              </div>
+            )}
           </Section>
 
           {error && <div style={{ marginBottom: 24, padding: 16, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, color: '#f87171', fontSize: '0.85rem', fontWeight: 600 }}>⚠ {error}</div>}

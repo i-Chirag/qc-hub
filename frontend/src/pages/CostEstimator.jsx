@@ -213,6 +213,16 @@ export default function CostEstimator() {
               <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', gap: 12 }} className="no-print">
                  <button 
                    type="button" 
+                   onClick={() => navigate('/green', { state: { entity_name: form.entity_name, location: form.location, items: result.items, daily_kg: form.target_kg } })}
+                   style={{ 
+                     padding: '12px 24px', borderRadius: 8, background: 'rgba(74, 222, 128, 0.1)', border: '1px solid #4ade80', 
+                     color: '#4ade80', fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' 
+                   }}
+                 >
+                   PROCEED TO GREEN ROI →
+                 </button>
+                 <button 
+                   type="button" 
                    onClick={() => navigate('/pl', { state: { entity_name: form.entity_name, location: form.location, investment: result.grand_total, capacity: form.target_kg } })}
                    style={{ 
                      padding: '12px 24px', borderRadius: 8, background: 'rgba(136, 231, 136, 0.1)', border: '1px solid var(--accent)', 
