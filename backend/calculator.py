@@ -17,37 +17,37 @@ def calculate_pl(data: dict) -> dict:
     """
 
     # ── 1. Input Parsing (Revenue Side) ────────────────────────────────────────
-    capacity        = to_f(data.get('capacity', 80))        # Rooms/Beds
-    linen_per_unit  = to_f(data.get('linen_per_unit', 7))   # KG per unit (Example: 7)
+    capacity        = to_f(data.get('capacity', 0))        # Rooms/Beds
+    linen_per_unit  = to_f(data.get('linen_per_unit', 0))   # KG per unit
     operating_days  = to_f(data.get('operating_days', 30))
-    billing_rate    = to_f(data.get('billing_rate_per_kg', 29))
+    billing_rate    = to_f(data.get('billing_rate_per_kg', 0))
     
     # Guest Laundry
-    guest_laundry_kg    = to_f(data.get('guest_laundry_kg', 500))
-    guest_laundry_rate  = to_f(data.get('guest_laundry_rate', 70))
+    guest_laundry_kg    = to_f(data.get('guest_laundry_kg', 0))
+    guest_laundry_rate  = to_f(data.get('guest_laundry_rate', 0))
     
     # Surcharges
     clean_surcharge_rate= to_f(data.get('clean_surcharge_rate', 0)) # Revenue surcharge
     
-    total_investment    = to_f(data.get('total_investment', 6246421))
+    total_investment    = to_f(data.get('total_investment', 0))
 
     # ── 2. Input Parsing (Expense Side) ────────────────────────────────────────
-    electricity_rate        = to_f(data.get('electricity_rate', 11))
-    gas_rate                = to_f(data.get('gas_rate', 100))
+    electricity_rate        = to_f(data.get('electricity_rate', 11)) # Industry standard
+    gas_rate                = to_f(data.get('gas_rate', 0))
     water_cost_per_kg       = to_f(data.get('water_cost_per_kg', 0))
     chemical_cost_per_kg    = to_f(data.get('chemical_cost_per_kg', 3))
     
     # Manpower Breakdown
-    operators_qty   = to_f(data.get('operators_qty', 6))
-    operators_rate  = to_f(data.get('operators_rate', 16800)) # Default to match Leela total 100800
-    manager_qty     = to_f(data.get('manager_qty', 1))
-    manager_rate    = to_f(data.get('manager_rate', 40000))
+    operators_qty   = to_f(data.get('operators_qty', 0))
+    operators_rate  = to_f(data.get('operators_rate', 0))
+    manager_qty     = to_f(data.get('manager_qty', 0))
+    manager_rate    = to_f(data.get('manager_rate', 0))
 
     # Overheads & Surcharges
-    rm_monthly              = to_f(data.get('rm_monthly', 10411))
+    rm_monthly              = to_f(data.get('rm_monthly', 0))
     food_cost_per_unit      = to_f(data.get('food_cost_total', 0)) # Manual entry
-    misc_monthly            = to_f(data.get('miscellaneous_monthly', 5600))
-    qc_supervision_monthly  = to_f(data.get('qc_supervision_monthly', 25000))
+    misc_monthly            = to_f(data.get('miscellaneous_monthly', 0))
+    qc_supervision_monthly  = to_f(data.get('qc_supervision_monthly', 0))
     clean_billing_surcharge = to_f(data.get('clean_billing_surcharge', 0)) # Expense surcharge
     linen_rental_cost_fixed = to_f(data.get('linen_rental_cost_fixed', 0))
 

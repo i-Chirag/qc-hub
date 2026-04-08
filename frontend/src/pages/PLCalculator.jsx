@@ -4,11 +4,11 @@ import { api } from '../api/index.js'
 import ResultPanel from '../components/ResultPanel.jsx'
 import ProjectLoader from '../components/ProjectLoader.jsx'
 
-// ── Defaults (Synced with Digital Twin Excel Example) ────────────────────────
+// ── Defaults (Baseline Neutral) ──────────────────────────────────────────────
 const DEFAULTS = {
-  entity_name: 'Leela Jaisalmer',
-  location: 'Jaisalmer',
-  category: 'resort',
+  entity_name: '',
+  location: '',
+  category: 'greenfield',
   industry: 'hospitality',
   property_type: 'resort',
   star_rating: 'star_4',
@@ -17,39 +17,39 @@ const DEFAULTS = {
   linen_rental: 'without',
   
   // Capacity & Volume
-  capacity: 80,
-  linen_per_unit: 7, 
-  operating_days: 30,
-  occupancy_pct: 100,
+  capacity: '',
+  linen_per_unit: '', 
+  operating_days: '30',
+  occupancy_pct: '100',
 
   // Revenue Streams
-  billing_rate_per_kg: 29,
-  guest_laundry_kg: 500,
-  guest_laundry_rate: 70,
-  clean_surcharge_rate: 0,
+  billing_rate_per_kg: '',
+  guest_laundry_kg: '',
+  guest_laundry_rate: '',
+  clean_surcharge_rate: '0',
 
   // Financial Inputs
-  total_investment: 6246421,
+  total_investment: '',
 
   // Operating Costs (Utility)
-  electricity_rate: 11,
-  gas_rate: 100,
-  water_cost_per_kg: 0,
-  chemical_cost_per_kg: 3,
+  electricity_rate: '',
+  gas_rate: '',
+  water_cost_per_kg: '0',
+  chemical_cost_per_kg: '3',
 
   // Manpower Breakdown
-  operators_qty: 6,
-  operators_rate: 16800,
-  manager_qty: 1,
-  manager_rate: 40000,
+  operators_qty: '',
+  operators_rate: '',
+  manager_qty: '',
+  manager_rate: '',
 
   // Specialized Overheads
-  rm_monthly: 10411,
-  food_cost_total: 0,
-  miscellaneous_monthly: 5600,
-  qc_supervision_monthly: 25000,
-  clean_billing_surcharge: 0,
-  linen_rental_cost_fixed: 0,
+  rm_monthly: '',
+  food_cost_total: '0',
+  miscellaneous_monthly: '',
+  qc_supervision_monthly: '',
+  clean_billing_surcharge: '0',
+  linen_rental_cost_fixed: '0',
 }
 
 // ── Field helpers ─────────────────────────────────────────────────────────────

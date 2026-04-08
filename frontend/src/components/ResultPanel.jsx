@@ -127,8 +127,8 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
         </div>
 
         <div style={{ marginBottom: 40 }}>
-           <h1 style={{ fontSize: '3rem', margin: '0 0 10px 0' }}>{form.entity_name || 'Leela Jaisalmer Audit'}</h1>
-           <p style={{ fontSize: '1.2rem', color: '#333' }}>Laundry Operational Feasibility — {form.location || 'Location'}</p>
+           <h1 style={{ fontSize: '3rem', margin: '0 0 10px 0' }}>{form.entity_name || 'Project Audit'}</h1>
+           <p style={{ fontSize: '1.2rem', color: '#333' }}>Laundry Operational Feasibility — {form.location || 'Location Placeholder'}</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 40 }}>
