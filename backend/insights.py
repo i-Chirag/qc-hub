@@ -89,5 +89,11 @@ def generate_ai_insights(pl_data=None, survey_data=None, estimate_data=None):
     return {
         "insights": insights,
         "radar": radar,
+        "metrics": {
+            "roi": pl_data.get('roi_percentage', 0) if pl_data else 0,
+            "annual_profit": pl_data.get('annual_profit', 0) if pl_data else 0,
+            "gop": pl_data.get('gop', 0) if pl_data else 0,
+            "health_score": survey_data.get('readiness_score', 0) if survey_data else 0
+        },
         "overall_health": "EXCELLENT" if len([i for i in insights if i['type'] == 'risk']) == 0 else "WARNING"
     }

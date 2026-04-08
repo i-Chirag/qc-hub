@@ -47,7 +47,7 @@ const Row = ({ label, value, indent, bold }) => (
 )
 
 export default function ResultPanel({ result: r, form, onSave, saved }) {
-  const gop = r.gross_operating_profit
+  const gop = r.gop // Switched from gross_operating_profit to gop to match backend
   const gopColor = gop >= 0 ? '#88e788' : '#f87171'
 
   const pieData = [

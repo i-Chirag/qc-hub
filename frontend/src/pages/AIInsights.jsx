@@ -124,6 +124,27 @@ export default function AIInsights() {
           Real-time cross-correlation of financial, technical, and logistical laundry data.
         </p>
 
+        {data.metrics && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, margin: '32px 0 40px' }} className="animate-fade">
+            <div className="glass-card" style={{ padding: '20px', background: 'rgba(136, 231, 136, 0.05)' }}>
+               <div style={{ fontSize: '0.6rem', color: 'var(--accent)', fontWeight: 800, textTransform: 'uppercase' }}>ROI (Projected)</div>
+               <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{data.metrics.roi}%</div>
+            </div>
+            <div className="glass-card" style={{ padding: '20px' }}>
+               <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Annual GOP</div>
+               <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹ {(data.metrics.annual_profit / 100000).toFixed(2)} L</div>
+            </div>
+            <div className="glass-card" style={{ padding: '20px' }}>
+               <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Monthly GOP</div>
+               <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹ {(data.metrics.gop).toLocaleString('en-IN')}</div>
+            </div>
+            <div className="glass-card" style={{ padding: '20px' }}>
+               <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Technical Score</div>
+               <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{data.metrics.health_score}/100</div>
+            </div>
+          </div>
+        )}
+
       <div style={{ display: 'grid', gridTemplateColumns: '400px 1fr', gap: 40, alignItems: 'start' }}>
         
         {/* ──── Charts and Health ──── */}
