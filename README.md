@@ -70,30 +70,34 @@ npm run dev
 
 ---
 
-## P&L Calculation Formula
+## P&L Calculation — Financial Digital Twin
+
+The system uses a high-fidelity "Digital Twin" model synchronized with factory-standard operational spreadsheets.
 
 ```
 Volume:
-  occupied_units = capacity × occupancy%
-  kg_per_day     = occupied_units × kg_factor (by industry/type)
-  kg_per_month   = kg_per_day × 26 (operating days)
+  kg_per_month   = Capacity (Rooms/Beds) × Linen/Unit (KG) × Operating Days (Manual)
 
 Revenue:
-  billing_revenue = kg_per_month × billing_rate
-  linen_revenue   = kg_per_month × linen_rate  (if applicable)
-  total_revenue   = billing_revenue + linen_revenue
+  primary_rev    = kg_per_month × billing_rate
+  guest_rev      = guest_laundry_kg × guest_laundry_rate
+  surcharge_rev  = kg_per_month × clean_surcharge_rate
+  total_revenue  = primary_rev + guest_rev + surcharge_rev (Net)
 
-Variable Costs:
-  electricity = kg × 0.4 units × electricity_rate
-  gas         = kg × consumption_factor × gas_rate
-  water       = kg × water_cost_per_kg
-  chemicals   = kg × chemical_cost_per_kg (default ₹3)
+Variable Costs (Operational):
+  electricity    = kg_per_month × 0.30 units/kg × electricity_rate
+  gas/png        = kg_per_month × 0.04 units/kg × gas_rate
+  water          = kg_per_month × water_cost_per_kg
+  chemicals      = kg_per_month × chemical_cost_per_kg (default ₹3)
 
-Fixed Costs:
-  labour + miscellaneous
+Fixed Costs (Manpower & Overheads):
+  manpower       = (Operators_Qty × Rate) + (Manager_Qty × Rate)
+  overheads      = R&M + QC Supervision + Misc + Food + Linen Rental
 
-GOI (Gross Operating Income) = Total Revenue − Total Costs
-ROI = (GOI × 12) / Total Investment × 100
+Result:
+  GOP (Gross Operating Profit) = Total Revenue (Net) − Total Expenses
+  ROI = (GOP × 12) / Total Investment × 100
+  Cost/KG = Total Expenses / kg_per_month
 ```
 
 ---
