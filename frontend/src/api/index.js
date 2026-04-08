@@ -142,5 +142,15 @@ export const api = {
     })
     if (!res.ok) throw new Error('Delete failed')
     return res.json()
+  },
+
+  updateProjectStatus: async (type, id, status) => {
+    const res = await fetch(`${API_BASE}/projects/${type}/${id}/status`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({ status }),
+    })
+    if (!res.ok) throw new Error('Status update failed')
+    return res.json()
   }
 }

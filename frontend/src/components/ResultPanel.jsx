@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 
 const fmt = (n) => {
@@ -47,24 +48,9 @@ const Row = ({ label, value, indent, bold }) => (
 )
 
 export default function ResultPanel({ result: r, form, onSave, saved }) {
-  const gop = r.gop // Switched from gross_operating_profit to gop to match backend
+  const [branded, setBranded] = useState(false)
+  const gop = r.gop 
   const gopColor = gop >= 0 ? '#88e788' : '#f87171'
-
-  const pieData = [
-    { name: 'Electricity',   value: r.electricity_cost, color: '#88e788' },
-    { name: 'Manpower',      value: r.manpower_cost,    color: '#fbbf24' },
-    { name: 'Gas/Utility',   value: r.gas_cost,        color: '#a78bfa' },
-    { name: 'Chemicals',     value: r.chemical_cost,     color: '#60a5fa' },
-    { name: 'R&M / QC',      value: r.rm_cost + r.qc_supervision_cost, color: '#94a3b8' },
-  ].filter(d => d.value > 0)
-
-  const projectionData = Array.from({ length: 5 }, (_, i) => {
-    const factor = Math.pow(1.05, i)
-    return {
-      year: `Year ${i + 1}`,
-      profit: Math.round(r.annual_gop * factor)
-    }
-  })
 
   const handlePrint = () => window.print()
 
@@ -72,6 +58,14 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
     <div style={{ position: 'sticky', top: 40 }}>
       {/* ──── SCREEN VIEW ────────────────────────────────────────── */}
       <div className="no-print animate-fade">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+           <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Audit Controls</div>
+           <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600 }}>
+              <input type="checkbox" checked={branded} onChange={e => setBranded(e.target.checked)} />
+              Partner Branding Enabled
+           </label>
+        </div>
+
         <div className="glass-card" style={{
           background: 'rgba(136, 231, 136, 0.03)',
           border: `1px solid ${gopColor}33`,
@@ -93,14 +87,12 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
           <Metric label="Processing Cost" value={`₹ ${r.cost_per_kg}`} color="var(--accent)" sub="Cost per KG" />
         </div>
 
-        {/* ──── Live Data Matrix ──── */}
         <div className="glass-card" style={{ padding: '24px', marginBottom: 20, background: 'rgba(255,255,255,0.01)', borderRadius: 16 }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Digital Twin Audit Details</div>
+          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Audit Digital Twin</div>
           <Row label="Actual Load / Month" value={fmtKg(r.kg_per_month)} />
-          <Row label="Primary Revenue" value={fmt(r.laundry_revenue_monthly)} />
-          <Row label="Guest Laundry" value={fmt(r.guest_revenue_monthly)} />
-          <Row label="Total Net Revenue" value={fmt(r.total_revenue_net)} bold />
-          <Row label="Total Expenses" value={fmt(r.total_expanses)} />
+          <Row label="Monthly Net Revenue" value={fmt(r.total_revenue_net)} bold />
+          <Row label="Estimated OPEX" value={fmt(r.total_expanses)} />
+          <Row label="Monthly GOP" value={fmt(gop)} bold />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
@@ -108,90 +100,112 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
             {saved ? '✓ ARCHIVED' : 'SAVE TO VAULT'}
           </button>
           <button type="button" onClick={(e) => { e.preventDefault(); handlePrint(); }} className="glass-button" style={{ background: 'var(--accent)', color: '#000' }}>
-             OFFICIAL AUDIT (PDF)
+             PRO AUDIT PDF
           </button>
         </div>
       </div>
 
-      {/* ──── PRINT-ONLY (DIGITAL TWIN AUDIT) ───────────────────────────────── */}
-      <div className="print-only" style={{ color: '#000', padding: '10mm' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '4px solid #000', paddingBottom: 20, marginBottom: 40 }}>
+      {/* ──── PRINT-ONLY (PRO PDF ENGINE) ───────────────────────────────── */}
+      <div className="print-only" style={{ color: '#000', padding: '10mm', position: 'relative' }}>
+        
+        {/* State Watermark */}
+        <div style={{ 
+          position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%) rotate(-45deg)',
+          fontSize: '8rem', fontWeight: 900, color: '#f1f5f9', zIndex: -1, opacity: 0.5, whiteSpace: 'nowrap'
+        }}>
+          INVESTMENT GRADE
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '6px solid #000', paddingBottom: 24, marginBottom: 40 }}>
            <div>
-              <div style={{ fontSize: '2.4rem', fontWeight: 900 }}>QC HUB</div>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#666' }}>PRECISION FEASIBILITY ENGINE</div>
+              {branded ? (
+                <div style={{ fontSize: '1.2rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Project Partner: {form.entity_name}</div>
+              ) : (
+                <>
+                  <div style={{ fontSize: '2.4rem', fontWeight: 900, letterSpacing: '-0.02em' }}>QC HUB</div>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#666', textTransform: 'uppercase' }}>Precision Feasibility Engine</div>
+                </>
+              )}
            </div>
            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>FINANCIAL DIGITAL TWIN</div>
-              <div style={{ fontSize: '0.75rem', color: '#666' }}>Timestamp: {new Date().toLocaleDateString('en-IN')}</div>
+              <div style={{ fontSize: '1rem', fontWeight: 900 }}>FINANCIAL AUDIT REPORT</div>
+              <div style={{ fontSize: '0.75rem', color: '#666', marginTop: 4 }}>Ref ID: QC-{Math.random().toString(36).substr(2, 6).toUpperCase()}</div>
+              <div style={{ fontSize: '0.75rem', color: '#666' }}>Date: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
            </div>
         </div>
 
-        <div style={{ marginBottom: 40 }}>
-           <h1 style={{ fontSize: '3rem', margin: '0 0 10px 0' }}>{form.entity_name || 'Project Audit'}</h1>
-           <p style={{ fontSize: '1.2rem', color: '#333' }}>Laundry Operational Feasibility — {form.location || 'Location Placeholder'}</p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 40 }}>
-           <div style={{ background: '#f8fafc', padding: '20px' }}>
-              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>ANNUAL GOP</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>{fmtLakh(r.annual_gop)}</div>
-           </div>
-           <div style={{ background: '#f8fafc', padding: '20px' }}>
-              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>INVESTMENT ROI</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>{r.roi_percentage}%</div>
-           </div>
-           <div style={{ background: '#f8fafc', padding: '20px' }}>
-              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>PAYBACK</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>{r.payback_months || '—'} Mo</div>
-           </div>
-           <div style={{ background: '#f8fafc', padding: '20px' }}>
-              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>GOP MARGIN</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>{r.gop_percentage}%</div>
+        <div style={{ marginBottom: 48 }}>
+           <h1 style={{ fontSize: '3.5rem', fontWeight: 900, margin: '0 0 12px 0', letterSpacing: '-0.03em' }}>{form.entity_name || 'Project Entity'}</h1>
+           <div style={{ display: 'flex', gap: 24 }}>
+              <span style={{ fontSize: '1.2rem', color: '#444' }}>Location: <strong>{form.location || 'Not Specified'}</strong></span>
+              <span style={{ fontSize: '1.2rem', color: '#444' }}>Sector: <strong>{form.industry || 'Hospitality'}</strong></span>
            </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, borderTop: '2px solid #000', paddingTop: 40 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 60 }}>
+           <div style={{ borderLeft: '4px solid #000', padding: '16px 20px', background: '#f8fafc' }}>
+              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>ANNUAL PROFIT</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900 }}>{fmtLakh(r.annual_gop)}</div>
+           </div>
+           <div style={{ borderLeft: '4px solid #000', padding: '16px 20px', background: '#f8fafc' }}>
+              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>ROI PROFILE</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900 }}>{r.roi_percentage}%</div>
+           </div>
+           <div style={{ borderLeft: '4px solid #000', padding: '16px 20px', background: '#f8fafc' }}>
+              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>PROJECT PAYBACK</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900 }}>{r.payback_months || '—'} Mo</div>
+           </div>
+           <div style={{ borderLeft: '4px solid #000', padding: '16px 20px', background: '#f8fafc' }}>
+              <div style={{ fontSize: '0.65rem', color: '#666', fontWeight: 800 }}>OPEX MARGIN</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900 }}>{r.gop_percentage}%</div>
+           </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 60, marginBottom: 80 }}>
            <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: 20, textTransform: 'uppercase' }}>Operational Parameters</div>
+              <div style={{ fontSize: '1rem', fontWeight: 900, marginBottom: 24, borderBottom: '2px solid #eee', paddingBottom: 8 }}>OPERATIONAL BASELINE</div>
               <Table data={[
-                ['Rooms / Units', form.capacity],
-                ['Linen Load per Unit', form.linen_per_unit + ' kg'],
-                ['Operating Days', form.operating_days + ' / Month'],
-                ['Actual Load / Month', fmtKg(r.kg_per_month)],
-                ['Billing Rate', '₹ ' + form.billing_rate_per_kg + ' / kg'],
-                ['Guest Laundry Rate', '₹ ' + form.guest_laundry_rate + ' / kg']
+                ['Rooms / Capacity', form.capacity],
+                ['Estimated Load / Day', (form.capacity * form.linen_per_unit).toFixed(1) + ' kg'],
+                ['Operating Days', form.operating_days + ' Days / Month'],
+                ['Calculated Monthly Load', fmtKg(r.kg_per_month)],
+                ['Billing Rate (Standard)', '₹ ' + form.billing_rate_per_kg + ' / kg'],
+                ['Guest Billing Logic', 'Premium Tier']
               ]} />
            </div>
            <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: 20, textTransform: 'uppercase' }}>Monthly Financial Audit</div>
+              <div style={{ fontSize: '1rem', fontWeight: 900, marginBottom: 24, borderBottom: '2px solid #eee', paddingBottom: 8 }}>FINANCIAL AUDIT (MONTHLY)</div>
               <Table data={[
-                ['Primary Revenue', fmt(r.laundry_revenue_monthly)],
-                ['Guest Revenue', fmt(r.guest_revenue_monthly)],
-                ['Total Net Revenue', fmt(r.total_revenue_net)],
-                ['Utility Cost (P&F)', fmt(r.electricity_cost + r.gas_cost)],
-                ['Manpower Cost', fmt(r.manpower_cost)],
-                ['Chemical Cost', fmt(r.chemical_cost)],
-                ['Total Expenses', fmt(r.total_expanses)],
-                ['GOP (Operational)', fmt(r.gop)]
+                ['Laundry Revenue (Net)', fmt(r.laundry_revenue_monthly)],
+                ['Guest Laundry Revenue', fmt(r.guest_revenue_monthly)],
+                ['Total Operational Revenue', fmt(r.total_revenue_net)],
+                ['Total Utility Expenses', fmt(r.electricity_cost + r.gas_cost)],
+                ['Direct Manpower Cost', fmt(r.manpower_cost)],
+                ['Chemicals & Processing', fmt(r.chemical_cost)],
+                ['MONTHLY OPEX', fmt(r.total_expanses)],
+                ['MONTHLY GOP', fmt(gop)]
               ]} />
            </div>
         </div>
 
-        <div style={{ marginTop: 40, background: '#f8fafc', padding: 24, border: '1px solid #eee', borderRadius: 8 }}>
-           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                 <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666' }}>COST PER KG PROCESSED</div>
-                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#10b981' }}>₹ {r.cost_per_kg}</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                 <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666' }}>INVESTMENT RECOVERY</div>
-                 <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{r.payback_months || '—'} MONTHS</div>
-              </div>
+        {/* Executive Verification */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, marginTop: 'auto', paddingTop: 60 }}>
+           <div>
+              <div style={{ height: 60, borderBottom: '1px solid #000', marginBottom: 12 }}></div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 900 }}>Quality Auditor Signature</div>
+              <div style={{ fontSize: '0.7rem', color: '#666' }}>QC Hub Compliance Division</div>
+           </div>
+           <div>
+              <div style={{ height: 60, borderBottom: '1px solid #000', marginBottom: 12 }}></div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 900 }}>Project Head Approval</div>
+              <div style={{ fontSize: '0.7rem', color: '#666' }}>{form.entity_name} Authorized Signatory</div>
            </div>
         </div>
 
-        <div style={{ marginTop: 60, borderTop: '1px solid #eee', paddingTop: 20, fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>
-           © {new Date().getFullYear()} Quality Control Hub (QC Hub) | Operational Intelligence Report
+        <div style={{ position: 'absolute', bottom: 0, left: '10mm', right: '10mm', borderTop: '1px solid #eee', paddingTop: 20, fontSize: '0.7rem', color: '#999', display: 'flex', justifyContent: 'space-between' }}>
+           <span>Digital Record: {Math.random().toString(36).substr(2, 10).toUpperCase()}</span>
+           <span>Confidential Financial Document | Internal Distribution Only</span>
+           <span>QC HUB PRO v1.2</span>
         </div>
       </div>
     </div>
@@ -200,12 +214,12 @@ export default function ResultPanel({ result: r, form, onSave, saved }) {
 
 function Table({ data }) {
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
       <tbody>
         {data.map((row, i) => (
-          <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
-            <td style={{ padding: '10px 0', color: '#666' }}>{row[0]}</td>
-            <td style={{ padding: '10px 0', textAlign: 'right', fontWeight: 700 }}>{row[1]}</td>
+          <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <td style={{ padding: '14px 0', color: '#444', fontWeight: 500 }}>{row[0]}</td>
+            <td style={{ padding: '14px 0', textAlign: 'right', fontWeight: 800 }}>{row[1]}</td>
           </tr>
         ))}
       </tbody>

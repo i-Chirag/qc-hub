@@ -258,6 +258,29 @@ def get_all_projects():
     combined.sort(key=lambda x: x['created_at'], reverse=True)
     return jsonify(combined)
 
+@app.route('/api/projects/<string:p_type>/<int:p_id>/status', methods=['PATCH'])
+@jwt_required()
+def update_project_status(p_type, p_id):
+    data = request.json
+    status = data.get('status')
+    if not status:
+        return jsonify({"error": "Status required"}), 400
+    
+    if p_type == 'financial':
+        item = Project.query.get_or_404(p_id)
+    elif p_type == 'technical':
+        item = SiteSurvey.query.get_or_404(p_id)
+    elif p_type == 'budget':
+        item = ProjectEstimate.query.get_or_404(p_id)
+    elif p_type == 'green':
+        item = SustainabilityAudit.query.get_or_404(p_id)
+    else:
+        return jsonify({"error": "Invalid project type"}), 400
+        
+    item.status = status
+    db.session.commit()
+    return jsonify({"message": f"Status updated to {status}", "status": status}), 200
+
 @app.route('/api/projects/detail/<string:p_type>/<int:p_id>', methods=['GET'])
 @jwt_required()
 def get_project_detail(p_type, p_id):

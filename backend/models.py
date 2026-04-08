@@ -27,6 +27,7 @@ class Project(db.Model):
     category        = db.Column(db.String(50))
     annual_profit   = db.Column(db.Float)
     roi_percentage  = db.Column(db.Float)
+    status          = db.Column(db.String(20), default='Draft')
     payload         = db.Column(db.Text)   # full JSON stored as string
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -40,6 +41,7 @@ class Project(db.Model):
             'category':   self.category,
             'annual_profit': self.annual_profit,
             'roi_percentage': self.roi_percentage,
+            'status':     self.status,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'type':       'financial'
         }
@@ -56,6 +58,7 @@ class SiteSurvey(db.Model):
     entry_width = db.Column(db.Float)
     water_inlet_size = db.Column(db.Float)
     floor_loading_ok = db.Column(db.Boolean)
+    status = db.Column(db.String(20), default='Draft')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -67,6 +70,7 @@ class SiteSurvey(db.Model):
             'readiness_status': self.readiness_status,
             'target_capacity':  self.target_capacity,
             'available_kw':     self.available_kw,
+            'status':           self.status,
             'created_at':       self.created_at.isoformat() if self.created_at else None,
             'type':             'technical'
         }
@@ -79,6 +83,7 @@ class ProjectEstimate(db.Model):
     target_kg = db.Column(db.Float)
     grand_total = db.Column(db.Float)
     items_json = db.Column(db.Text) # Storing the list as a JSON string
+    status = db.Column(db.String(20), default='Draft')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -88,6 +93,7 @@ class ProjectEstimate(db.Model):
             'location':     self.location,
             'target_kg':    self.target_kg,
             'grand_total':  self.grand_total,
+            'status':       self.status,
             'created_at':   self.created_at.isoformat() if self.created_at else None,
             'type':         'budget'
         }

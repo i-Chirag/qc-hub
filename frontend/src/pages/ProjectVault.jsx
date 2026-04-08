@@ -20,6 +20,25 @@ const Badge = ({ type }) => {
   )
 }
 
+const StatusBadge = ({ status }) => {
+  const colors = {
+    'Draft': { bg: 'rgba(148, 163, 184, 0.1)', text: '#94a3b8' },
+    'Under Review': { bg: 'rgba(251, 191, 36, 0.1)', text: '#fbbf24' },
+    'Approved': { bg: 'rgba(136, 231, 136, 0.1)', text: 'var(--accent)' },
+    'Finalized': { bg: 'rgba(167, 139, 250, 0.1)', text: '#a78bfa' }
+  }
+  const theme = colors[status] || colors['Draft']
+  return (
+    <span style={{ 
+      padding: '4px 10px', borderRadius: 20, fontSize: '0.6rem', fontWeight: 900, 
+      background: theme.bg, color: theme.text, border: `1px solid ${theme.text}22`,
+      textTransform: 'uppercase', letterSpacing: '0.05em'
+    }}>
+      ● {status}
+    </span>
+  )
+}
+
 const StatCard = ({ label, value, icon, color }) => (
   <div className="glass-card" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -60,6 +79,17 @@ export default function ProjectVault() {
     }
   }
 
+  const handleStatusChange = async (type, id, newStatus) => {
+    try {
+      await api.updateProjectStatus(type, id, newStatus)
+      setProjects(projects.map(p => 
+        (p.id === id && p.type === type) ? { ...p, status: newStatus } : p
+      ))
+    } catch (e) {
+      alert('Failed to update status')
+    }
+  }
+
   const filtered = projects.filter(p => {
     const matchesSearch = (p.entity_name || p.name || '').toLowerCase().includes(search.toLowerCase()) ||
                           (p.location || '').toLowerCase().includes(search.toLowerCase())
@@ -69,9 +99,8 @@ export default function ProjectVault() {
 
   const stats = {
     total: projects.length,
-    financial: projects.filter(p => p.type === 'financial').length,
-    technical: projects.filter(p => p.type === 'technical').length,
-    green: projects.filter(p => p.type === 'green').length,
+    approved: projects.filter(p => p.status === 'Approved' || p.status === 'Finalized').length,
+    pending: projects.filter(p => p.status === 'Draft' || p.status === 'Under Review').length,
     avgRoi: projects.filter(p => p.type === 'financial' && p.roi_percentage).reduce((acc, curr) => acc + curr.roi_percentage, 0) / (projects.filter(p => p.type === 'financial' && p.roi_percentage).length || 1)
   }
 
@@ -79,14 +108,15 @@ export default function ProjectVault() {
     <div style={{ padding: '40px', maxWidth: 1200, margin: '0 auto' }}>
       <header style={{ marginBottom: 40 }}>
         <h1 style={{ fontFamily: 'var(--font-head)', fontSize: '2.5rem', fontWeight: 800, marginBottom: 8 }}>Project Vault</h1>
-        <p style={{ color: 'var(--text-dim)', fontSize: '1rem' }}>Centralized management for all laundry audits and calculations.</p>
+        <p style={{ color: 'var(--text-dim)', fontSize: '1rem' }}>Lifecycle management and executive-level command center.</p>
       </header>
 
       {/* Stats Summary */}
       <div style={{ display: 'flex', gap: 20, marginBottom: 40 }}>
         <StatCard label="Total Saved Assets" value={stats.total} icon="󱓡" />
-        <StatCard label="Avg ROI Profile" value={`${stats.avgRoi.toFixed(1)}%`} icon="󱔗" color="var(--accent)" />
-        <StatCard label="Technical Audits" value={stats.technical} icon="󱝿" color="#34d399" />
+        <StatCard label="Approved Projects" value={stats.approved} icon="✓" color="var(--accent)" />
+        <StatCard label="Pending Review" value={stats.pending} icon="󱂬" color="#fbbf24" />
+        <StatCard label="Avg ROI Profile" value={`${stats.avgRoi.toFixed(1)}%`} icon="󱔗" color="#a78bfa" />
       </div>
 
       {/* Toolbar */}
@@ -123,10 +153,10 @@ export default function ProjectVault() {
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.01)' }}>
               <th style={{ padding: '20px 24px', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Project Entity</th>
+              <th style={{ padding: '20px 24px', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Status</th>
               <th style={{ padding: '20px 24px', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Type</th>
-              <th style={{ padding: '20px 24px', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Key Metric</th>
-              <th style={{ padding: '20px 24px', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Date</th>
-              <th style={{ padding: '20px 24px', textAlign: 'right' }}></th>
+              <th style={{ padding: '20px 24px', fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 800, textTransform: 'uppercase' }}>Metric</th>
+              <th style={{ padding: '20px 24px', textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -140,30 +170,40 @@ export default function ProjectVault() {
                   <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>{item.entity_name || item.name || 'Untitled'}</div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 2 }}>{item.location || 'Unknown Location'}</div>
                 </td>
+                <td style={{ padding: '20px 24px' }}>
+                  <select 
+                    value={item.status || 'Draft'} 
+                    onChange={(e) => handleStatusChange(item.type, item.id, e.target.value)}
+                    style={{ 
+                      padding: '4px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', 
+                      border: '1px solid var(--border)', color: 'var(--text)', fontSize: '0.7rem', fontWeight: 600
+                    }}
+                  >
+                    <option value="Draft">Draft</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Finalized">Finalized</option>
+                  </select>
+                </td>
                 <td style={{ padding: '20px 24px' }}><Badge type={item.type} /></td>
                 <td style={{ padding: '20px 24px' }}>
                   <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>
                     {item.type === 'financial' && <span style={{ color: 'var(--accent)' }}>{item.roi_percentage}% ROI</span>}
-                    {item.type === 'technical' && <span style={{ color: '#34d399' }}>{item.readiness_score}/100 SCORE</span>}
-                    {item.type === 'budget'    && <span style={{ color: '#fbbf24' }}>₹ {(item.grand_total / 100000).toFixed(1)}L TOTAL</span>}
-                    {item.type === 'green'     && <span style={{ color: '#4ade80' }}>{item.solar_capacity_kwp} kWp SOLAR</span>}
+                    {item.type === 'technical' && <span style={{ color: '#34d399' }}>{item.readiness_score}/100</span>}
+                    {item.type === 'budget'    && <span style={{ color: '#fbbf24' }}>₹ {(item.grand_total / 100000).toFixed(1)}L</span>}
+                    {item.type === 'green'     && <span style={{ color: '#4ade80' }}>{item.water_savings_kld} KLD</span>}
                   </div>
-                </td>
-                <td style={{ padding: '20px 24px', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-                  {new Date(item.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </td>
                 <td style={{ padding: '20px 24px', textAlign: 'right', whiteSpace: 'nowrap' }}>
                   <button 
                     onClick={() => navigate(`/report/${item.type}/${item.id}`)}
-                    style={{ background: 'var(--accent)', border: 'none', color: '#061706', cursor: 'pointer', padding: '6px 14px', borderRadius: 6, fontSize: '0.7rem', fontWeight: 800, marginRight: 12, transition: 'transform 0.2s' }}
-                    className="hover-scale"
+                    style={{ background: 'var(--accent)', border: 'none', color: '#061706', cursor: 'pointer', padding: '6px 14px', borderRadius: 6, fontSize: '0.7rem', fontWeight: 800, marginRight: 12 }}
                   >
-                    MASTER REPORT
+                    REPORT
                   </button>
                   <button 
                     onClick={() => handleDelete(item.type, item.id)}
-                    style={{ background: 'transparent', border: 'none', color: '#f87171', opacity: 0.6, cursor: 'pointer', padding: '8px', fontSize: '1.2rem', verticalAlign: 'middle' }}
-                    title="Delete Record"
+                    style={{ background: 'transparent', border: 'none', color: '#f87171', opacity: 0.6, cursor: 'pointer', padding: '4px' }}
                   >
                     󱂩
                   </button>
